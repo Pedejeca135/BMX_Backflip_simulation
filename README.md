@@ -1,2 +1,2 @@
 # BMX_Backflip_simulation
-this a bmx backflip simulation made in OpenGL 2
+BMX backflip simulation made in OpenGL 2
