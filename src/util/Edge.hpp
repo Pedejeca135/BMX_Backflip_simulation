@@ -3,15 +3,6 @@
 
 #include <Vertex.hpp>
 
-/*
-#include <stdio.h>
-#include <stdlib.h>
-#include <vector>
-#include <string>
-#include <iostream>
-#include <math.h>
-*/
-
 class Edge
 {
 	public:

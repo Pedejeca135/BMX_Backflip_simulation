@@ -6,7 +6,7 @@
 
 #include "Plotter.hpp"
 #include "Transform.hpp"
-#include "UtilComm.hpp"
+#include "./util/UtilComm.hpp"
 #include <armadillo>
     
 class PhysicalObject
