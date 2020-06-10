@@ -6,7 +6,19 @@
 #include "Object.hpp"
 #include "Transform.hpp"
 #include "Plotter.hpp"
+#include "UtilComm.hpp"
 
+
+/*********************************************************
+ * 
+ *  global variables 
+ * 
+ * ***********************************************************/
+vector<Object> models;
+vector<arma::fmat> models_transf;
+vector<Timer> models_time;
+
+Transform Tr = Transform();
 
 
 /*************************************************
@@ -15,6 +27,9 @@
 int screenInit(GLFWwindow** window, char* windowName, int xSize, int ySize, Color3f windowColor);
 int keyPress(GLFWwindow** window,float eye[3], float camera[3]);
 void keyPressCapture();
+int presentationWindow();
+
+void print(std::string printing);
 
 
 /*************************************************
@@ -22,102 +37,53 @@ void keyPressCapture();
  * ************************************************/
 int main( void )
 {
-
+    //glfw initalization:
     if( !glfwInit() )
     {
         fprintf( stderr, "GLFW initialization fail\n" );
         getchar();
         return -1;
     }
+
+/********************************************
+ * 
+ *  initialization of windows models.
+ * 
+ * ******************************************/
+    //BMX object
+    Object obj_BMX = Object();
+    obj_BMX.init("./models/BMXO.obj");
+    models.push_back(obj_BMX);    
+    models_transf.push_back(Tr.S(0.1,0.1,0.1));
+    models_time.push_back(Timer());
     
+    //Title text
+    Object obj_Title = Object();
+    obj_Title.init("./models/armadillo.obj");
+    models.push_back(obj_Title);
+    models_transf.push_back(Tr.S(0.1,0.1,0.1));
+    models_time.push_back(Timer());
 
-    float timeDelay = 40.0f;
+    //continue text
+    Object obj_Continue = Object();
+    obj_Continue.init("./models/armadillo.obj");
+    models.push_back(obj_Continue);
+    models_transf.push_back(Tr.S(0.1,0.1,0.1));
+    models_time.push_back(Timer());
 
-
-    //vector<Object> bmx = readObjFile("BMX.obj");
-    //Object ramp = readFirstObjFile("RAMPA.obj");
-
+    print("antes de presentation");
     
-    
-    GLFWwindow* mainWindow;
-    GLFWwindow* captureWindow;
+   presentationWindow();
 
-    if(screenInit(&mainWindow,"BMX BackFlip",1000,750,Color3f(0.2,0.18,0.2)) == -1)
-    {
-        return -1;
-    }
-
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-//Projections
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-
-    int width, height;
-	glfwGetFramebufferSize(mainWindow,&width, &height);
-	float ar = (float)width/(float)height;
-
-//Perspective projection
-    glFrustum(-ar, ar, -ar, ar, 2.0, 4.0);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    Transform Tr = Transform();
-    float t_angle = 0.0f;
-
-    //arma::frowvec eye = {0.0, 0.0, 10.0};
-    //arma::frowvec camera = {0.0, 0.0, 0.0};
-    float eye [3] = {0.0,0.0,3.0};
-	float camera [3] = {0.0,0.0,0.0};
-	float F[3] = {0.0,3.0,0.0};
-
-    int res = -1;   
-//the first window cicle for capturing values.
-do{
-
-        glfwMakeContextCurrent(captureWindow);
-        glfwSetInputMode(captureWindow, GLFW_STICKY_KEYS, GL_TRUE);
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        glClear( GL_COLOR_BUFFER_BIT );
-
-         
-
-
-
-
-    do {
-        res = keyPress(&mainWindow,eye,camera);
-        glClear( GL_COLOR_BUFFER_BIT  | GL_DEPTH_BUFFER_BIT );
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-        gluLookAt(eye[0], eye[1], eye[2], 
-                camera[0], camera[1], camera[2], 
-                0.0, 1.0, 0.0);
-
-
-
-
-        //draw(ramp,Color3f(0.0,0.0,1.0));
-        //draw(bmx[0],Color3f(1.0,0.0,0.0));
-
-        glfwSwapBuffers(mainWindow);
-        glfwPollEvents();
-
-    } while( glfwGetKey(mainWindow, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
-           glfwWindowShouldClose(mainWindow) == 0 && res != 1);
-
-}while(res == 1);
-
-
+    print("despues de presentation");
+   
+  
 
     glfwTerminate();
 
     return 0;
 
 }//main (END).
-
-
 
 //screen initialization.
 //glfw has to be already initializated.
@@ -262,7 +228,7 @@ int keyPressCapture(GLFWwindow** window,float shift_Var[], int  shiftCounter)
 		}
         return 0;		
 }
-
+/*
 void captureCicle(GLFWwindow** window, float arrayOfValues[],int n)
 {
  
@@ -271,7 +237,7 @@ void captureCicle(GLFWwindow** window, float arrayOfValues[],int n)
     *   - Initial velocity(1): 2.0m/s - 10.0m/s.
     *   - Total jump length(2): 0.5m - 1.5m.
     *   - Angular velocity(3):  π/2s - π/s.
-    */
+    *
 
     int shiftCounter = 0 ;
 
@@ -286,4 +252,124 @@ void captureCicle(GLFWwindow** window, float arrayOfValues[],int n)
     }
     while (shiftCounter < n)
     
+}
+*/
+
+//this function is just for present the project.
+int presentationWindow()
+{
+    arma::frowvec eye = {0.0 , 10.0 , 10.0};
+    arma::frowvec camera = {0.0, 0.0, 10.0};
+    GLFWwindow* window;
+    //window = glfwCreateWindow(1024,860, "BMX BackFlip",NULL,NULL);
+    if(screenInit(&window,"BMX BackFlip",1024,860,Color3f(0.2,0.18,0.2)) != 0)
+    {
+        return -1;
+
+    }
+    glfwMakeContextCurrent(window);
+    glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
+    //Projections
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    int width, height;
+    glfwGetFramebufferSize(window,&width, & height);
+    float ar = width/height;
+
+    //parallel projection
+    glViewport(0,0,width, height);
+    glOrtho(-ar,ar,-1.0,1.0,-20.0,20.0);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    Transform Trans = Transform();
+
+  
+        float t_angle = 0;
+        float a_angle = 0;
+        std::vector<Vertex>  bmx_vertices = models[0].get_faces_verts();
+        models_time[0].Restart();
+
+        std::vector<Vertex>  title_vertices = models[1].get_faces_verts();
+        models_time[1].Restart();
+        models_transf[1] = Trans.S(0.005,0.005,0.005) * Trans.T(0.0,0.0,0.0);
+        
+        std::vector<Vertex>  continue_vertices = models[2].get_faces_verts();
+        models_time[2].Restart();
+        models_transf[2] = Trans.S(0.005,0.005,0.005) * Trans.T(0.3,0.3,-0.3);
+
+         std::vector< Vertex > title_draw_vertices;
+        for ( unsigned int i=0; i<title_vertices.size(); i++ ) 
+        {
+            arma::fcolvec v = title_vertices[i].getHomg();
+            arma::fcolvec vp = models_transf[1] * v;
+            Vertex rv = Vertex();
+            rv.set_value(arma::trans(vp));
+            title_draw_vertices.push_back(rv);
+        }
+
+         std::vector< Vertex > continue_draw_vertices;
+        for ( unsigned int i=0; i<title_vertices.size(); i++ ) 
+        {
+            arma::fcolvec v = title_vertices[i].getHomg();
+            arma::fcolvec vp = models_transf[2] * v;
+            Vertex rv = Vertex();
+            rv.set_value(arma::trans(vp));
+            title_draw_vertices.push_back(rv);
+        }
+
+        float angular_Velocity =  (360.0) / 4.0;
+    
+do
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    //glLoadIdentity();
+   
+    int last = t_angle;
+    t_angle = (t_angle < 360.0f) ? t_angle + 22.5 : (last-360);   
+
+    models_transf[0] = Trans.S(0.005f, 0.005f, 0.005f)* Trans.R(0.0f, 1.0f, 0.0f, t_angle) * Trans.R(0.0f,0.0f,1.0f,11.25)* Trans.R(1.0f,0.0f,0.0,-9.25);
+
+        std::vector< Vertex > bmx_draw_vertices;
+        for ( unsigned int i=0; i<bmx_vertices.size(); i++ ) 
+        {
+            arma::fcolvec v = bmx_vertices[i].getHomg();
+            arma::fcolvec vp = models_transf[0] * v;
+            Vertex rv = Vertex();
+            rv.set_value(arma::trans(vp));
+            bmx_draw_vertices.push_back(rv);
+        }
+         draw(bmx_draw_vertices,Color3f(0.5,0.7,0.3));
+         //draw(title_draw_vertices,Color3f(0.5,0.7,0.3)); 
+         //draw(continue_draw_vertices,Color3f(0.5,0.7,0.3)); 
+
+    glEnd();
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+models_time[0].Restart();
+}while( glfwGetKey(window,GLFW_KEY_SPACE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
+
+glfwTerminate();
+return 0;
+}
+
+//this is for capture the values for the simulation.
+int captureWindow()
+{
+
+}
+
+//this is a function for the whole simulation.
+int animationWindow()
+{
+
+}
+
+void print(std::string printing)
+{
+    cout<<endl<< printing << endl;
 }

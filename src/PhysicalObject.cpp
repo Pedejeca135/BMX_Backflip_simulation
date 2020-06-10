@@ -4,15 +4,15 @@
  * 
  * **********************************/
 
-#include "Plotter.hpp"
-#include "Transform.hpp"
-#include "./util/UtilComm.hpp"
-#include <armadillo>
-    
+//#include "Plotter.hpp"
+//#include "Transform.hpp"
+//#include "./util/UtilComm.hpp"
+//#include <armadillo>
+/*
 class PhysicalObject
 {
     private:
-    /****************** Physics atributes *******************/
+    /****************** Physics atributes *******************
     float mass;//mass of the object.
     float x_aceleration;
     float y_aceleration;
@@ -23,7 +23,7 @@ class PhysicalObject
 
 
     public:
-    /***************** geters and seters *******************/
+    /***************** geters and seters *******************
     float get_mass();
     float get_x_aceleration();
     float get_y_aceleration();
@@ -39,3 +39,4 @@ class PhysicalObject
 
 
 };
+*/
