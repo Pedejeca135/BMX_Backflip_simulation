@@ -40,6 +40,7 @@ int keyPressCapture(GLFWwindow** window, int  shiftCounter);
 
 int presentationWindow();
 int captureWindow();
+int animationWindow();
 
 void print(std::string printing);
 
@@ -196,9 +197,26 @@ int main( void )
         shift_variables_delta[2] = 0.05;
         shift_variables_delta[3] = 2.5;
 
+
+
+    /************************************************
+     * 
+     * RAMP
+     * 
+     * *******************************************/
+    //ramp --------------------------------- 10
+    Object obj_RAMP = Object();
+    obj_RAMP.init("./models/RAMP.obj");
+    models.push_back(obj_RAMP);
+    models_transf.push_back(Tr.S(0.1,0.1,0.1));
+    models_time.push_back(Timer());
     
 
-    
+
+
+
+    int res_AnimationW;
+
     do{
         if(presentationWindow() != 0)
         {
@@ -206,18 +224,17 @@ int main( void )
         }
         else if(captureWindow() != 0)
         {
-            
+            return -1;
         }
         else
         {
-            
-        }      
+            do
+            {
+                res_AnimationW = animationWindow();
+            } while (res_AnimationW == 1);
+        }
         
-    }while (1);
-   
-    
-   
-
+    }while (res_AnimationW == 2 );
    
   
 
@@ -748,10 +765,7 @@ float arrow_vpn_x[4];
             angular_Vel_Arrow_Draw_vertices.push_back(rv3);
         }
 
-        int counter = 0;
-
-
-    
+        int counter = 0;    
 do
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -900,13 +914,125 @@ glfwTerminate();
 return 0;
 }
 
+
+/****************************************************
+ * 
+ * ANIMATION
+ * ***********************************************/
+
 //this is a function for the whole simulation.
 int animationWindow()
 {
+    //camera and eye declared:
+    float eye[3] = {0.0,0.0,3.0};
+    float camera[3] = {0.0, 0.0, 0.0};
+    float F3[3] = {0.0,3.0,0.0};
+    int res = -1;
 
+    GLFWwindow* window;
+    //window = glfwCreateWindow(1024,860, "BMX BackFlip",NULL,NULL);
+    if(screenInit(&window,"BMX BackFlip ñ_ñ",1024,860,Color3f(0.1,0.08,0.1)) != 0)
+    {
+        return -1;
+
+    }
+    glfwMakeContextCurrent(window);
+    glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
+    //Projections
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    int width, height;
+    glfwGetFramebufferSize(window,&width, & height);
+    float ar = width/height;
+
+    //perspectic projection
+    glFrustum(-ar,ar,-ar,ar,1,10.0);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    Transform Trans = Transform();
+
+        std::vector<Vertex>  ramp_vertices = models[10].get_faces_verts();
+        models_time[15].Restart();
+        models_transf[15] = Trans.T(0.0,0.0,0.0)*Trans.S(0.0030,0.0030,0.0030) * Trans.R(0.0,1.0,0.0,5.0);//
+        
+         std::vector< Vertex > ramp_draw_vertices;
+        for ( unsigned int i=0; i<ramp_vertices.size(); i++ ) 
+        {
+            arma::fcolvec v = ramp_vertices[i].getHomg();
+            arma::fcolvec vp = models_transf[1] * v;
+            Vertex rv = Vertex();
+            rv.set_value(arma::trans(vp));
+            ramp_draw_vertices.push_back(rv);
+        }
+
+
+
+
+   //color para la rampa  Color3f(0.65, 0.32, 0.055);
+
+  /*
+        float t_angle = 0;
+        float a_angle = 0;
+        std::vector<Vertex>  bmx_vertices = models[0].get_faces_verts();
+        models_time[0].Restart();
+
+        std::vector<Vertex>  title_vertices = models[1].get_faces_verts();
+        models_time[1].Restart();
+        models_transf[1] = Trans.T(0.0,0.65,0.0)*Trans.S(0.0030,0.0030,0.0030) * Trans.R(0.0,1.0,0.0,5.0);//
+        
+        std::vector<Vertex>  continue_vertices = models[2].get_faces_verts();
+        models_time[2].Restart();
+        models_transf[2] = Trans.T(0.0,-0.70,0.0)*Trans.S(0.00205,0.00205,0.00205) * Trans.R(0.0,1.0,0.0,5.0);//
+
+         std::vector< Vertex > title_draw_vertices;
+        for ( unsigned int i=0; i<title_vertices.size(); i++ ) 
+        {
+            arma::fcolvec v = title_vertices[i].getHomg();
+            arma::fcolvec vp = models_transf[1] * v;
+            Vertex rv = Vertex();
+            rv.set_value(arma::trans(vp));
+            title_draw_vertices.push_back(rv);
+        }
+
+         std::vector< Vertex > continue_draw_vertices;
+        for ( unsigned int i=0; i<continue_vertices.size(); i++ ) 
+        {
+            arma::fcolvec v = continue_vertices[i].getHomg();
+            arma::fcolvec vp = models_transf[2] * v;
+            Vertex rv = Vertex();
+            rv.set_value(arma::trans(vp));
+            continue_draw_vertices.push_back(rv);
+        }
+
+        float angular_Velocity =  (360.0) / 4.0;*/
+
+        
+    
+do
+{
+    res = keyPress(&window,eye,camera);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(eye[0],eye[1], eye[2],camera[0],camera[1],camera[2],0.0,1.0,0.0);
+    
+    draw(ramp_draw_vertices,Color3f(0.65, 0.32, 0.055));
+   
+
+    glEnd();
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+models_time[0].Restart();
+}while( glfwGetKey(window,GLFW_KEY_SPACE) != GLFW_PRESS &&  glfwGetKey(window,GLFW_KEY_ENTER) != GLFW_PRESS   && glfwWindowShouldClose(window) == 0);
+
+glfwTerminate();
+return res;
 }
-
-
 
 
 /******************************************************
