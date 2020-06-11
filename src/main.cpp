@@ -20,13 +20,24 @@ vector<Timer> models_time;
 
 Transform Tr = Transform();
 
+float shift_variables_offset[4];
+float shift_variables_vpn[4];
+float shift_variables_vpn_max[4];
+float shift_variables_delta[4];
+
+float arrow_vpn[4];
+
 
 /*************************************************
  * functions declaration
  * ************************************************/
 int screenInit(GLFWwindow** window, char* windowName, int xSize, int ySize, Color3f windowColor);
+
+
 int keyPress(GLFWwindow** window,float eye[3], float camera[3]);
-void keyPressCapture();
+int keyPressCapture(GLFWwindow** window, int  shiftCounter);
+
+
 int presentationWindow();
 int captureWindow();
 
@@ -165,8 +176,27 @@ int main( void )
     models_transf.push_back(Tr.S(0.1,0.1,0.1));
     models_time.push_back(Timer());
 
+        shift_variables_offset[0] = 0.0;
+        shift_variables_offset[1] = 0.0;
+        shift_variables_offset[2] = 0.0;
+        shift_variables_offset[3] = 0.0;
 
+        shift_variables_vpn[0] = 40.0;
+        shift_variables_vpn[1] = 2.0;
+        shift_variables_vpn[2] = 0.5;
+        shift_variables_vpn[3] = 180;
 
+        shift_variables_vpn_max[0] = 90.0;
+        shift_variables_vpn_max[1] = 10.0;
+        shift_variables_vpn_max[2] = 1.5;
+        shift_variables_vpn_max[3] = 360;
+
+        shift_variables_delta[0] = 0.5;
+        shift_variables_delta[1] = 0.125;
+        shift_variables_delta[2] = 0.05;
+        shift_variables_delta[3] = 2.5;
+
+    
 
     
     do{
@@ -279,47 +309,51 @@ int keyPress(GLFWwindow** window,float eye[3], float camera[3])
 /**************************************************************************************************
  * 
  * 
- * 
+ *      shift_variables_vpn[0] = 40.0;
+        shift_variables_vpn[1] = 2.0;
+        shift_variables_vpn[2] = 0.5;
+        shift_variables_vpn[3] = 180;
  * 
  * 
  * ***********************************************************************************************************/
 
 
+
 //key press actions on capturing values.
-int keyPressCapture(GLFWwindow** window,float shift_Var[], int  shiftCounter)
+int keyPressCapture(GLFWwindow** window, int  shiftCounter)
 {
 		if(glfwGetKey(*window,  GLFW_KEY_UP) == GLFW_PRESS || glfwGetKey(*window,  GLFW_KEY_RIGHT) == GLFW_PRESS)//increase the value.
 		{
             if(shiftCounter == 0)
             {
-                shift_Var[shiftCounter] += 0.5;
-                if(shift_Var[shiftCounter] > 90)
+                shift_variables_offset[shiftCounter] += shift_variables_delta[shiftCounter];
+                if(shift_variables_offset[shiftCounter] +  shift_variables_vpn[shiftCounter] > 90)
                 {
-                    shift_Var[shiftCounter] = 90;
+                    shift_variables_offset[shiftCounter] = 90 - shift_variables_vpn[shiftCounter] ;
                 }
             }
             else if(shiftCounter == 1)
             {
-                shift_Var[shiftCounter] += 0.25;
-                if(shift_Var[shiftCounter] > 10)
+                shift_variables_offset[shiftCounter] += shift_variables_delta[shiftCounter];
+                if(shift_variables_offset[shiftCounter]  + shift_variables_vpn[shiftCounter] > 10)
                 {
-                    shift_Var[shiftCounter] = 10;
+                    shift_variables_offset[shiftCounter] = 10 - shift_variables_vpn[shiftCounter];
                 }
             }
             else if(shiftCounter == 2)
             {
-                shift_Var[shiftCounter] += 0.05;
-                if(shift_Var[shiftCounter] > 1.5)
+                shift_variables_offset[shiftCounter] += shift_variables_delta[shiftCounter];
+                if(shift_variables_offset[shiftCounter] +shift_variables_vpn[shiftCounter] > 1.5)
                 {
-                    shift_Var[shiftCounter] = 1.5;
+                    shift_variables_offset[shiftCounter] = 1.5 - shift_variables_vpn[shiftCounter];
                 }
             }
             else if(shiftCounter == 3)
             {
-                shift_Var[shiftCounter] += 0.05;
-                if(shift_Var[shiftCounter] > 3)
+                shift_variables_offset[shiftCounter] += shift_variables_delta[shiftCounter];
+                if(shift_variables_offset[shiftCounter] + shift_variables_vpn[shiftCounter] > 360)
                 {
-                    shift_Var[shiftCounter] = 3;
+                    shift_variables_offset[shiftCounter] = 360 - shift_variables_vpn[shiftCounter];
                 }
             }			
 		}
@@ -327,36 +361,25 @@ int keyPressCapture(GLFWwindow** window,float shift_Var[], int  shiftCounter)
 		{
 			if(shiftCounter == 0)
             {
-                shift_Var[shiftCounter] -= 0.5;
-                if(shift_Var[shiftCounter] < 40)
-                {
-                    shift_Var[shiftCounter] = 40;
-                }
+                shift_variables_offset[shiftCounter] -=shift_variables_delta[shiftCounter];
             }
             else if(shiftCounter == 1)
             {
-                shift_Var[shiftCounter] -= 0.25;
-                if(shift_Var[shiftCounter] < 2)
-                {
-                    shift_Var[shiftCounter] = 2;
-                }
+                shift_variables_offset[shiftCounter] -= shift_variables_delta[shiftCounter];
             }
             else if(shiftCounter == 2)
             {
-                shift_Var[shiftCounter] -= 0.05;
-                if(shift_Var[shiftCounter] < 0.5)
-                {
-                    shift_Var[shiftCounter] = 0.5;
-                }
+                shift_variables_offset[shiftCounter]-= shift_variables_delta[shiftCounter];
             }
             else if(shiftCounter == 3)
             {
-                shift_Var[shiftCounter] -= 0.05;
-                if(shift_Var[shiftCounter] < 1)
+                shift_variables_offset[shiftCounter] -= shift_variables_delta[shiftCounter];                
+            }	
+
+            if(shift_variables_offset[shiftCounter] < 0)
                 {
-                    shift_Var[shiftCounter] = 1;
+                    shift_variables_offset[shiftCounter] = 0;
                 }
-            }
 		}
 		else if(glfwGetKey(*window,  GLFW_KEY_ENTER) == GLFW_PRESS)//go to the next value.
 		{
@@ -518,6 +541,9 @@ int captureWindow()
         float t_angle = 0;
         float a_angle = 0;
 
+
+    
+
 /*********************************************************************+
  * 
  * TEXTS
@@ -538,7 +564,7 @@ int captureWindow()
 
         std::vector<Vertex>  angular_Vel_text_vertices = models[6].get_faces_verts();
         models_time[6].Restart();
-        models_transf[6] = Trans.T(0.40,-0.60,0.0)*Trans.S(0.00080,0.00080,0.00080)* Trans.R(0.0,0.0,1.0,20);//
+        models_transf[6] = Trans.T(0.40,-0.60,0.0)*Trans.S(0.00085,0.00085,0.00085)* Trans.R(0.0,0.0,1.0,20);//
 
         std::vector<Vertex>  parameters_text_vertices = models[9].get_faces_verts();
         models_time[15].Restart();
@@ -636,21 +662,17 @@ int captureWindow()
             Vertex rv0 = Vertex();
             rv0.set_value(arma::trans(vp));
             mass_BAR_Draw_vertices.push_back(rv0);
-
          
             vp = models_transf[8] * v;
             Vertex rv1 = Vertex();
             rv1.set_value(arma::trans(vp));
-            jump_BAR_Draw_vertices.push_back(rv1);
-
-             
+            jump_BAR_Draw_vertices.push_back(rv1);             
 
             vp = models_transf[9] * v;
             Vertex rv2 = Vertex();
             rv2.set_value(arma::trans(vp));
             initial_Vel_BAR_Draw_vertices.push_back(rv2);
-
-
+            
             vp = models_transf[10] * v;
             Vertex rv3 = Vertex();
             rv3.set_value(arma::trans(vp));
@@ -664,19 +686,31 @@ int captureWindow()
  * 
  * 
  * **************************************************************************/
+float arrow_x[4];
+
+float arrow_vpn_x[4];
+
+        arrow_vpn_x[0] = -0.93;
+        arrow_vpn_x[1] = -0.63;
+        arrow_vpn_x[2] = -0.33;
+        arrow_vpn_x[3] = -0.03;
 
         std::vector<Vertex>  Arrow_vertices = models[8].get_faces_verts();
         models_time[11].Restart();
-        models_transf[11] = Trans.T(-0.93,0.65,0.0)*Trans.S(0.050,0.050,0.050);
+        arrow_x[0] = arrow_vpn_x[0];
+        models_transf[11] = Trans.T(arrow_x[0],0.65,0.0)*Trans.S(0.050,0.050,0.050);
 
         models_time[12].Restart();
-        models_transf[12] = Trans.T(-0.63,0.15,0.0)*Trans.S(0.050,0.050,0.050);
+        arrow_x[1] = arrow_vpn_x[1];
+        models_transf[12] = Trans.T(arrow_x[1],0.15,0.0)*Trans.S(0.050,0.050,0.050);
 
         models_time[13].Restart();
-        models_transf[13] = Trans.T(-0.33,-0.35,0.0)*Trans.S(0.050,0.050,0.050);
+        arrow_x[2] = arrow_vpn_x[2];
+        models_transf[13] = Trans.T(arrow_x[2],-0.35,0.0)*Trans.S(0.050,0.050,0.050);
 
         models_time[14].Restart();
-        models_transf[14] = Trans.T(-0.03,-0.85,0.0)*Trans.S(0.050,0.050,0.050);
+        arrow_x[3] = arrow_vpn_x[3] ;
+        models_transf[14] = Trans.T(arrow_x[3] ,-0.85,0.0)*Trans.S(0.050,0.050,0.050);
 
 
       /*models_transf[7] = Trans.T(-0.50,0.68,0.0)*Trans.S(0.1500,0.1500,0.1500) ;
@@ -714,42 +748,153 @@ int captureWindow()
             angular_Vel_Arrow_Draw_vertices.push_back(rv3);
         }
 
+        int counter = 0;
 
 
-        float angular_Velocity =  (360.0) / 4.0;
-
-        print("Do");
     
 do
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     //glLoadIdentity();
-   
-         draw(mass_text_draw_vertices,Color3f(0.5,0.7,0.3));
-         draw(jump_text_draw_vertices,Color3f(0.5,0.7,0.3)); 
-         draw(initial_Vel_text_draw_vertices,Color3f(0.5,0.7,0.3));
-         draw(angular_Vel_text_draw_vertices,Color3f(0.5,0.7,0.3));
+   int antCont = counter;
+         counter += keyPressCapture(&window, counter);
+  
+        //mass
+         if(counter == 0)
+         {
+             draw(mass_text_draw_vertices,Color3f(0.93,0.45,0.1));
 
-         //draw(mass_BAR_Draw_vertices,Color3f(0.5,0.7,0.3));
-         draw(mass_BAR_Draw_vertices,Color3f(0.0,1.0,0.0),Color3f(1.0,0.0,0.0),0,-0.45);
-         draw(mass_BAR_Draw_vertices,Color3f(0.5,0.7,0.3));
-         draw(jump_BAR_Draw_vertices,Color3f(0.5,0.7,0.3)); 
-         draw(initial_Vel_BAR_Draw_vertices,Color3f(0.5,0.7,0.3));
-         draw(angular_Vel_BAR_Draw_vertices,Color3f(0.5,0.7,0.3));
+             arrow_x[counter] = arrow_vpn_x[counter] + ((shift_variables_offset[counter] / shift_variables_delta[counter])*(0.855))/( (shift_variables_vpn_max[counter] - shift_variables_vpn[counter]) / shift_variables_delta[counter]);
+            
+             int last = t_angle;
+             t_angle = (t_angle < 360.0f) ? t_angle + 22.5 : (last-360);
+             models_transf[11] = Trans.T(arrow_x[0],0.65,0.0)*Trans.S(0.050,0.050,0.050)* Trans.R(0.0,1.0,0.0,t_angle);              
+         }
+         else
+         {
+             draw(mass_text_draw_vertices,Color3f(0.5,0.7,0.3));
 
-         draw(mass_Arrow_Draw_vertices,Color3f(0.5,0.7,0.3));
-         draw(jump_Arrow_Draw_vertices,Color3f(0.5,0.7,0.3)); 
-         draw(initial_Vel_Arrow_Draw_vertices,Color3f(0.5,0.7,0.3));
-         draw(angular_Vel_Arrow_Draw_vertices,Color3f(0.5,0.7,0.3));
+             models_transf[11] = Trans.T(arrow_x[0],0.65,0.0)*Trans.S(0.050,0.050,0.050);
+         }
+         
+         //jump
+         if(counter == 1)
+         {
+             draw(jump_text_draw_vertices,Color3f(0.93,0.45,0.1)); 
 
-         draw(parameters_text_draw_vertices,Color3f(0.3, 0.66, 1.0));
+             arrow_x[counter] = arrow_vpn_x[counter] + ((shift_variables_offset[counter] / shift_variables_delta[counter])*(0.855))/( (shift_variables_vpn_max[counter] - shift_variables_vpn[counter]) / shift_variables_delta[counter]);
+
+             int last = t_angle;
+             t_angle = (t_angle < 360.0f) ? t_angle + 22.5 : (last-360);             
+             models_transf[12] = Trans.T(arrow_x[1],0.15,0.0)*Trans.S(0.050,0.050,0.050)* Trans.R(0.0,1.0,0.0,t_angle); 
+             
+         }
+         else
+         {
+             draw(jump_text_draw_vertices,Color3f(0.5,0.7,0.3)); 
+
+             models_transf[12] = Trans.T(arrow_x[1],0.15,0.0)*Trans.S(0.050,0.050,0.050);
+         }
+         
+         //initial velocity
+         if(counter == 2)
+         {
+             draw(initial_Vel_text_draw_vertices,Color3f(0.93,0.45,0.1));
+
+             arrow_x[counter] = arrow_vpn_x[counter] + ((shift_variables_offset[counter] / shift_variables_delta[counter])*(0.855))/( (shift_variables_vpn_max[counter] - shift_variables_vpn[counter]) / shift_variables_delta[counter]);
+
+             int last = t_angle;
+             t_angle = (t_angle < 360.0f) ? t_angle + 22.5 : (last-360);
+             models_transf[13] = Trans.T(arrow_x[2],-0.35,0.0)*Trans.S(0.050,0.050,0.050)* Trans.R(0.0,1.0,0.0,t_angle); 
+             
+         }
+         else
+         {
+             draw(initial_Vel_text_draw_vertices,Color3f(0.5,0.7,0.3));    
+
+             models_transf[13] = Trans.T(arrow_x[2],-0.35,0.0)*Trans.S(0.050,0.050,0.050);      
+         }
+         
+         //angular velocity
+         if (counter == 3)
+         {
+             draw(angular_Vel_text_draw_vertices,Color3f(0.93,0.45,0.1));
+
+             arrow_x[counter] = arrow_vpn_x[counter] + ((shift_variables_offset[counter] / shift_variables_delta[counter])*(0.855))/( (shift_variables_vpn_max[counter] - shift_variables_vpn[counter]) / shift_variables_delta[counter]);
+
+            int last = t_angle;
+             t_angle = (t_angle < 360.0f) ? t_angle + 15.5 : (last-360);
+             models_transf[14] = Trans.T(arrow_x[3] ,-0.85,0.0)*Trans.S(0.050,0.050,0.050)* Trans.R(0.0,1.0,0.0,t_angle);             
+         }
+         else
+         {
+             draw(angular_Vel_text_draw_vertices,Color3f(0.5,0.7,0.3));
+
+             models_transf[14] = Trans.T(arrow_x[3] ,-0.85,0.0)*Trans.S(0.050,0.050,0.050);
+         }
+
+        for ( unsigned int i=0; i<Arrow_vertices.size(); i++ ) 
+        {
+            arma::fcolvec v = Arrow_vertices[i].getHomg();
+            arma::fcolvec vp = models_transf[11] * v;
+            Vertex rv0 = Vertex();
+            rv0.set_value(arma::trans(vp));
+            mass_Arrow_Draw_vertices.push_back(rv0);
+
+            vp = models_transf[12] * v;
+            Vertex rv1 = Vertex();
+            rv1.set_value(arma::trans(vp));
+            jump_Arrow_Draw_vertices.push_back(rv1);
+
+            vp = models_transf[13] * v;
+            Vertex rv2 = Vertex();
+            rv2.set_value(arma::trans(vp));
+            initial_Vel_Arrow_Draw_vertices.push_back(rv2);
+
+            vp = models_transf[14] * v;
+            Vertex rv3 = Vertex();
+            rv3.set_value(arma::trans(vp));
+            angular_Vel_Arrow_Draw_vertices.push_back(rv3);
+        }
+
+        draw(mass_Arrow_Draw_vertices,Color3f(0.5,0.7,0.3));
+        mass_Arrow_Draw_vertices.clear();
+
+        draw(jump_Arrow_Draw_vertices,Color3f(0.5,0.7,0.3));
+        jump_Arrow_Draw_vertices.clear();
+
+        draw(initial_Vel_Arrow_Draw_vertices,Color3f(0.5,0.7,0.3)); 
+        initial_Vel_Arrow_Draw_vertices.clear();
+
+        draw(angular_Vel_Arrow_Draw_vertices,Color3f(0.5,0.7,0.3));
+        angular_Vel_Arrow_Draw_vertices.clear();
+
+
+        draw(mass_BAR_Draw_vertices ,Color3f(0.5,0.7,0.3),Color3f(0.5,0.3,0.7), 0, arrow_x[0]);
+        draw(jump_BAR_Draw_vertices ,Color3f(0.5,0.7,0.3),Color3f(0.5,0.3,0.7), 0, arrow_x[1]); 
+        draw(initial_Vel_BAR_Draw_vertices ,Color3f(0.5,0.7,0.3),Color3f(0.5,0.3,0.7), 0, arrow_x[2]);
+        draw(angular_Vel_BAR_Draw_vertices ,Color3f(0.5,0.7,0.3) , Color3f(0.5,0.3,0.7), 0, arrow_x[3]);
+
+        draw(parameters_text_draw_vertices,Color3f(0.3, 0.66, 1.0));
 
     glEnd();
     glfwSwapBuffers(window);
     glfwPollEvents();
 models_time[0].Restart();
-}while( glfwGetKey(window,GLFW_KEY_SPACE) != GLFW_PRESS &&  glfwGetKey(window,GLFW_KEY_ENTER) != GLFW_PRESS   && glfwWindowShouldClose(window) == 0);
+
+
+while(glfwGetKey(window,GLFW_KEY_ENTER) == GLFW_PRESS && antCont < counter)
+{
+    if(glfwGetKey(window,GLFW_KEY_ENTER) != GLFW_PRESS)
+    {
+        break;
+    }
+    glfwPollEvents();
+}
+
+
+}while( counter < 4   && glfwWindowShouldClose(window) == 0);
 
 glfwTerminate();
 return 0;
