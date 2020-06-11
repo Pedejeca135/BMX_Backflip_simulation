@@ -28,6 +28,7 @@ int screenInit(GLFWwindow** window, char* windowName, int xSize, int ySize, Colo
 int keyPress(GLFWwindow** window,float eye[3], float camera[3]);
 void keyPressCapture();
 int presentationWindow();
+int captureWindow();
 
 void print(std::string printing);
 
@@ -50,6 +51,11 @@ int main( void )
  *  initialization of windows models.
  * 
  * ******************************************/
+
+    /**********************************
+     * 
+     *              For presentation:
+     * ***********************************************/
     //BMX object
     Object obj_BMX = Object();
     obj_BMX.init("./models/BMXO.obj");
@@ -59,23 +65,51 @@ int main( void )
     
     //Title text
     Object obj_Title = Object();
-    obj_Title.init("./models/armadillo.obj");
+    obj_Title.init("./models/text_BMXBackflip.obj");
     models.push_back(obj_Title);
     models_transf.push_back(Tr.S(0.1,0.1,0.1));
     models_time.push_back(Timer());
 
     //continue text
     Object obj_Continue = Object();
-    obj_Continue.init("./models/armadillo.obj");
+    obj_Continue.init("./models/text_Continue.obj");
     models.push_back(obj_Continue);
     models_transf.push_back(Tr.S(0.1,0.1,0.1));
     models_time.push_back(Timer());
 
-    print("antes de presentation");
-    
-   presentationWindow();
+    /**********************************
+     * 
+     *              For capturing:
+     * ***********************************************/
+    //continue text
+    Object obj_Continue = Object();
+    obj_Continue.init("./models/text_Continue.obj");
+    models.push_back(obj_Continue);
+    models_transf.push_back(Tr.S(0.1,0.1,0.1));
+    models_time.push_back(Timer());
 
-    print("despues de presentation");
+
+
+    
+    do{
+        if(presentationWindow() != 0)
+        {
+            return -1;
+        }
+        else if(captureWindow() != 0)
+        {
+            
+        }
+        else
+        {
+            
+        }      
+        
+    }while (1);
+   
+    
+   
+
    
   
 
@@ -112,39 +146,45 @@ int keyPress(GLFWwindow** window,float eye[3], float camera[3])
 		{
 			eye[1] += 0.05;
 			camera[1] += 0.05;
+            return 0;
 		}
 		else if(glfwGetKey(*window,  GLFW_KEY_DOWN) == GLFW_PRESS)//move the camera down.
 		{
 			eye[1] -= 0.05;
 			camera[1] -= 0.05;
+            return 0;
 		}
 		else if(glfwGetKey(*window,  GLFW_KEY_RIGHT) == GLFW_PRESS)//move the camera to the right.
 		{
 			eye[0] += 0.05;
 			camera[0] += 0.05;
+            return 0;
 		}
 		else if(glfwGetKey(*window,  GLFW_KEY_LEFT) == GLFW_PRESS)//move the camera to left.
 		{
 			eye[0] -= 0.05;
 			camera[0] -= 0.05;
+            return 0;
 		}
 		else if(glfwGetKey(*window,GLFW_KEY_KP_SUBTRACT  ) == GLFW_PRESS)//ward off.
 		{
 			eye[2] += 0.05;
 			camera[2] += 0.05;
+            return 0;
 		}
 		else if(glfwGetKey(*window, GLFW_KEY_KP_ADD ) == GLFW_PRESS)//get closer.
 		{
 			eye[2] -= 0.05;
 			camera[2] -= 0.05;
+            return 0;
 		}
 		else if(glfwGetKey(*window, GLFW_KEY_R ) == GLFW_PRESS)//rewind the whole move.
         {
-            return 0;
+            return 1;
         }			
         else if(glfwGetKey(*window, GLFW_KEY_C ) == GLFW_PRESS)//new values.
         {
-            return 1;
+            return 2;
         }
 		return -1;
 }
@@ -228,38 +268,10 @@ int keyPressCapture(GLFWwindow** window,float shift_Var[], int  shiftCounter)
 		}
         return 0;		
 }
-/*
-void captureCicle(GLFWwindow** window, float arrayOfValues[],int n)
-{
- 
-    /*  
-    *   - Mass(0): 40 - 90.
-    *   - Initial velocity(1): 2.0m/s - 10.0m/s.
-    *   - Total jump length(2): 0.5m - 1.5m.
-    *   - Angular velocity(3):  π/2s - π/s.
-    *
-
-    int shiftCounter = 0 ;
-
-    do
-    {
-        shiftCounter += keyPressCapture(window, arrayOfValues[],shiftCounter) ;  
-        glBegin(GL_TRIANGLES);
-            glVertex3f(0.0,-1.0, 0.0);
-            glVertex3f(0.5, 0.0, 0.0);
-            glVertex3f(-0.5, 0.0, 0.0);
-        glEnd();     
-    }
-    while (shiftCounter < n)
-    
-}
-*/
 
 //this function is just for present the project.
 int presentationWindow()
 {
-    arma::frowvec eye = {0.0 , 10.0 , 10.0};
-    arma::frowvec camera = {0.0, 0.0, 10.0};
     GLFWwindow* window;
     //window = glfwCreateWindow(1024,860, "BMX BackFlip",NULL,NULL);
     if(screenInit(&window,"BMX BackFlip",1024,860,Color3f(0.2,0.18,0.2)) != 0)
@@ -295,11 +307,11 @@ int presentationWindow()
 
         std::vector<Vertex>  title_vertices = models[1].get_faces_verts();
         models_time[1].Restart();
-        models_transf[1] = Trans.S(0.005,0.005,0.005) * Trans.T(0.0,0.0,0.0);
+        models_transf[1] = Trans.T(0.0,0.65,0.0)*Trans.S(0.0030,0.0030,0.0030) * Trans.R(0.0,1.0,0.0,5.0);//
         
         std::vector<Vertex>  continue_vertices = models[2].get_faces_verts();
         models_time[2].Restart();
-        models_transf[2] = Trans.S(0.005,0.005,0.005) * Trans.T(0.3,0.3,-0.3);
+        models_transf[2] = Trans.T(0.0,-0.70,0.0)*Trans.S(0.00205,0.00205,0.00205) * Trans.R(0.0,1.0,0.0,5.0);//
 
          std::vector< Vertex > title_draw_vertices;
         for ( unsigned int i=0; i<title_vertices.size(); i++ ) 
@@ -312,13 +324,13 @@ int presentationWindow()
         }
 
          std::vector< Vertex > continue_draw_vertices;
-        for ( unsigned int i=0; i<title_vertices.size(); i++ ) 
+        for ( unsigned int i=0; i<continue_vertices.size(); i++ ) 
         {
-            arma::fcolvec v = title_vertices[i].getHomg();
+            arma::fcolvec v = continue_vertices[i].getHomg();
             arma::fcolvec vp = models_transf[2] * v;
             Vertex rv = Vertex();
             rv.set_value(arma::trans(vp));
-            title_draw_vertices.push_back(rv);
+            continue_draw_vertices.push_back(rv);
         }
 
         float angular_Velocity =  (360.0) / 4.0;
@@ -344,14 +356,14 @@ do
             bmx_draw_vertices.push_back(rv);
         }
          draw(bmx_draw_vertices,Color3f(0.5,0.7,0.3));
-         //draw(title_draw_vertices,Color3f(0.5,0.7,0.3)); 
-         //draw(continue_draw_vertices,Color3f(0.5,0.7,0.3)); 
+         draw(title_draw_vertices,Color3f(0.5,0.7,0.3)); 
+         draw(continue_draw_vertices,Color3f(0.5,0.7,0.3)); 
 
     glEnd();
     glfwSwapBuffers(window);
     glfwPollEvents();
 models_time[0].Restart();
-}while( glfwGetKey(window,GLFW_KEY_SPACE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
+}while( glfwGetKey(window,GLFW_KEY_SPACE) != GLFW_PRESS &&  glfwGetKey(window,GLFW_KEY_ENTER) != GLFW_PRESS   && glfwWindowShouldClose(window) == 0);
 
 glfwTerminate();
 return 0;
