@@ -38,13 +38,7 @@ void print(std::string printing);
  * ************************************************/
 int main( void )
 {
-    //glfw initalization:
-    if( !glfwInit() )
-    {
-        fprintf( stderr, "GLFW initialization fail\n" );
-        getchar();
-        return -1;
-    }
+    
 
 /********************************************
  * 
@@ -56,21 +50,21 @@ int main( void )
      * 
      *              For presentation:
      * ***********************************************/
-    //BMX object
+    //BMX object----------------------------- 0
     Object obj_BMX = Object();
     obj_BMX.init("./models/BMXO.obj");
     models.push_back(obj_BMX);    
     models_transf.push_back(Tr.S(0.1,0.1,0.1));
     models_time.push_back(Timer());
     
-    //Title text
+    //Title text------------------------------ 1
     Object obj_Title = Object();
     obj_Title.init("./models/text_BMXBackflip.obj");
     models.push_back(obj_Title);
     models_transf.push_back(Tr.S(0.1,0.1,0.1));
     models_time.push_back(Timer());
 
-    //continue text
+    //continue text---------------------------- 2
     Object obj_Continue = Object();
     obj_Continue.init("./models/text_Continue.obj");
     models.push_back(obj_Continue);
@@ -79,14 +73,98 @@ int main( void )
 
     /**********************************
      * 
-     *              For capturing:
+     *              Capture_Text:
      * ***********************************************/
-    //continue text
-    Object obj_Continue = Object();
-    obj_Continue.init("./models/text_Continue.obj");
-    models.push_back(obj_Continue);
+    //mass text-------------------------------- 3
+    Object obj_Mass_Text = Object();
+    obj_Mass_Text.init("./models/text_Mass.obj");
+    models.push_back(obj_Mass_Text);
     models_transf.push_back(Tr.S(0.1,0.1,0.1));
     models_time.push_back(Timer());
+
+    //Jump text-------------------------------- 4
+    Object obj_Jump_Text = Object();
+    obj_Jump_Text.init("./models/text_Jump.obj");
+    models.push_back(obj_Jump_Text);
+    models_transf.push_back(Tr.S(0.1,0.1,0.1));
+    models_time.push_back(Timer());
+
+    //Initial_Velocity text ---------------------5
+    Object obj_Initial_Velocity_Text = Object();
+    obj_Initial_Velocity_Text.init("./models/text_Initial_Velocity.obj");
+    models.push_back(obj_Initial_Velocity_Text);
+    models_transf.push_back(Tr.S(0.1,0.1,0.1));
+    models_time.push_back(Timer());
+
+
+    //Angular_Velocity text ----------------------6
+    Object obj_Angular_Velocity_Text = Object();
+    obj_Angular_Velocity_Text.init("./models/text_angular_velocity.obj");
+    models.push_back(obj_Angular_Velocity_Text);
+    models_transf.push_back(Tr.S(0.1,0.1,0.1));
+    models_time.push_back(Timer());
+
+   /**********************************
+     * 
+     *              Capture_BAR:
+     * ***********************************************/
+
+    //mass bar----------------------------------- 7
+     Object obj_Mass_Bar = Object();
+    obj_Mass_Bar.init("./models/BARRA.obj");
+    models.push_back(obj_Mass_Bar);
+    models_transf.push_back(Tr.S(0.1,0.1,0.1));
+    models_time.push_back(Timer());
+
+     //Jump bar
+    models_transf.push_back(Tr.S(0.1,0.1,0.1));
+    models_time.push_back(Timer());
+
+     //Initial_Velocity bar
+    models_transf.push_back(Tr.S(0.1,0.1,0.1));
+    models_time.push_back(Timer());
+
+    //Angular_Velocity bar
+    models_transf.push_back(Tr.S(0.1,0.1,0.1));
+    models_time.push_back(Timer());
+
+    /**********************************
+     * 
+     *              Capture_INDI:
+     * ***********************************************/
+
+    //mass indicator --------------------------------- 8
+     Object obj_Mass_INDI = Object();
+    obj_Mass_INDI.init("./models/INDI_ARROW.obj");
+    models.push_back(obj_Mass_INDI);
+    models_transf.push_back(Tr.S(0.1,0.1,0.1));
+    models_time.push_back(Timer());
+
+    //Jump indicator
+    models_transf.push_back(Tr.S(0.1,0.1,0.1));
+    models_time.push_back(Timer());
+
+    //Initial_Velocity indicator
+    models_transf.push_back(Tr.S(0.1,0.1,0.1));
+    models_time.push_back(Timer());
+
+    //Angular_Velocity indicator
+    models_transf.push_back(Tr.S(0.1,0.1,0.1));
+    models_time.push_back(Timer());
+
+
+    /************************************************
+     * 
+     * Capture extra text
+     * 
+     * *******************************************/
+    //mass indicator --------------------------------- 9
+     Object obj_parameters_Text = Object();
+    obj_parameters_Text.init("./models/text_simulation_Parameters.obj");
+    models.push_back(obj_parameters_Text);
+    models_transf.push_back(Tr.S(0.1,0.1,0.1));
+    models_time.push_back(Timer());
+
 
 
 
@@ -123,6 +201,14 @@ int main( void )
 //glfw has to be already initializated.
 int screenInit(GLFWwindow** window, char* windowName, int xSize, int ySize, Color3f windowColor)
 {
+    //glfw initalization:
+    if( !glfwInit() )
+    {
+        fprintf( stderr, "GLFW initialization fail\n" );
+        getchar();
+        return -1;
+    }
+
     *window = glfwCreateWindow(xSize,ySize, windowName, NULL, NULL);
     if( *window == NULL ) {
         fprintf( stderr, "opening GLFW window fail.\n" );
@@ -188,6 +274,16 @@ int keyPress(GLFWwindow** window,float eye[3], float camera[3])
         }
 		return -1;
 }
+
+
+/**************************************************************************************************
+ * 
+ * 
+ * 
+ * 
+ * 
+ * ***********************************************************************************************************/
+
 
 //key press actions on capturing values.
 int keyPressCapture(GLFWwindow** window,float shift_Var[], int  shiftCounter)
@@ -268,6 +364,16 @@ int keyPressCapture(GLFWwindow** window,float shift_Var[], int  shiftCounter)
 		}
         return 0;		
 }
+
+
+/********************************************************************************************************
+ * 
+ * 
+ *                                                  
+ *                                              WINDOWS FUNCTIONS
+ * 
+ * ****************************************************************************************************/
+
 
 //this function is just for present the project.
 int presentationWindow()
@@ -369,10 +475,284 @@ glfwTerminate();
 return 0;
 }
 
+
+
+
+/***********************************************
+ * 
+ * 
+ *                  CAPTURE WINDOW.
+ * 
+ * 
+ * *****************************************************/
 //this is for capture the values for the simulation.
 int captureWindow()
 {
+     GLFWwindow* window;
+    //window = glfwCreateWindow(1024,860, "BMX BackFlip",NULL,NULL);
+    if(screenInit(&window,"BMX Capture Values",1024,860,Color3f(0.2,0.18,0.2)) != 0)
+    {
+        return -1;
+    }
+    
+    glfwMakeContextCurrent(window);
+    glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
 
+    //Projections
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    int width, height;
+    glfwGetFramebufferSize(window,&width, & height);
+    float ar = width/height;
+
+    //parallel projection
+    glViewport(0,0,width, height);
+    glOrtho(-ar,ar,-1.0,1.0,-20.0,20.0);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    Transform Trans = Transform();
+
+        float t_angle = 0;
+        float a_angle = 0;
+
+/*********************************************************************+
+ * 
+ * TEXTS
+ * 
+ * **************************************************************************/
+
+        std::vector<Vertex>  mass_text_vertices = models[3].get_faces_verts();
+        models_time[3].Restart();
+        models_transf[3] = Trans.T(-0.55,0.88,0.0)*Trans.S(0.00080,0.00080,0.00080)* Trans.R(0.0,0.0,1.0,20);//
+
+        std::vector<Vertex>  jump_text_vertices = models[4].get_faces_verts();
+        models_time[4].Restart();
+        models_transf[4] = Trans.T(-0.25,0.38,0.0)* Trans.S(0.00070,0.00070,0.00070)* Trans.R(0.0,0.0,1.0,20);//
+
+        std::vector<Vertex>  initial_Vel_text_vertices = models[5].get_faces_verts();
+        models_time[5].Restart();
+        models_transf[5] = Trans.T(0.05,-0.13,0.0) *Trans.S(0.00080,0.00080,0.00080)* Trans.R(0.0,0.0,1.0,20);//
+
+        std::vector<Vertex>  angular_Vel_text_vertices = models[6].get_faces_verts();
+        models_time[6].Restart();
+        models_transf[6] = Trans.T(0.40,-0.60,0.0)*Trans.S(0.00080,0.00080,0.00080)* Trans.R(0.0,0.0,1.0,20);//
+
+        std::vector<Vertex>  parameters_text_vertices = models[9].get_faces_verts();
+        models_time[15].Restart();
+        models_transf[15] = Trans.T(0.45,0.80,0.0)*Trans.S(0.0012,0.0012,0.0012);//
+
+        /*
+        Trans.T(-0.50,0.68,0.0)*
+        Trans.T(-0.20,0.18,0.0)
+         Trans.T(0.10,-0.32,0.0)
+         Trans.T(0.40,-0.82,0.0)
+        */
+
+         std::vector< Vertex > mass_text_draw_vertices;
+        for ( unsigned int i=0; i<mass_text_vertices.size(); i++ ) 
+        {
+            arma::fcolvec v = mass_text_vertices[i].getHomg();
+            arma::fcolvec vp = models_transf[3] * v;
+            Vertex rv = Vertex();
+            rv.set_value(arma::trans(vp));
+            mass_text_draw_vertices.push_back(rv);
+        }
+
+
+        std::vector< Vertex > jump_text_draw_vertices;
+        for ( unsigned int i=0; i<jump_text_vertices.size(); i++ ) 
+        {
+            arma::fcolvec v = jump_text_vertices[i].getHomg();
+            arma::fcolvec vp = models_transf[4] * v;
+            Vertex rv = Vertex();
+            rv.set_value(arma::trans(vp));
+            jump_text_draw_vertices.push_back(rv);
+
+        }
+
+        std::vector< Vertex > initial_Vel_text_draw_vertices;
+        for ( unsigned int i=0; i<initial_Vel_text_vertices.size(); i++ ) 
+        {
+            arma::fcolvec v = initial_Vel_text_vertices[i].getHomg();
+            arma::fcolvec vp = models_transf[5] * v;
+            Vertex rv = Vertex();
+            rv.set_value(arma::trans(vp));
+            initial_Vel_text_draw_vertices.push_back(rv);
+        }
+
+        std::vector< Vertex > angular_Vel_text_draw_vertices;
+        for ( unsigned int i=0; i<angular_Vel_text_vertices.size(); i++ ) 
+        {
+            arma::fcolvec v = angular_Vel_text_vertices[i].getHomg();
+            arma::fcolvec vp = models_transf[6] * v;
+            Vertex rv = Vertex();
+            rv.set_value(arma::trans(vp));
+            angular_Vel_text_draw_vertices.push_back(rv);
+        }
+
+        std::vector< Vertex > parameters_text_draw_vertices;
+        for ( unsigned int i=0; i<parameters_text_vertices.size(); i++ ) 
+        {
+            arma::fcolvec v = parameters_text_vertices[i].getHomg();
+            arma::fcolvec vp = models_transf[15] * v;
+            Vertex rv = Vertex();
+            rv.set_value(arma::trans(vp));
+            parameters_text_draw_vertices.push_back(rv);
+        }
+
+/*********************************************************************+
+ * 
+ * 
+ * BAR
+ * 
+ * 
+ * **************************************************************************/
+
+        std::vector<Vertex>  BAR_vertices = models[7].get_faces_verts();
+        models_time[7].Restart();
+        models_transf[7] = Trans.T(-0.50,0.68,0.0)*Trans.S(0.1500,0.1500,0.1500) ;//
+
+        models_time[8].Restart();
+        models_transf[8] = Trans.T(-0.20,0.18,0.0)*Trans.S(0.1500,0.1500,0.1500);//
+
+        models_time[9].Restart();
+        models_transf[9] = Trans.T(0.10,-0.32,0.0)*Trans.S(0.1500,0.1500,0.1500);//
+
+        models_time[10].Restart();
+        models_transf[10] = Trans.T(0.40,-0.82,0.0)*Trans.S(0.1500,0.1500,0.1500) ;//
+
+        std::vector<Vertex>  mass_BAR_Draw_vertices ;
+        std::vector<Vertex>  jump_BAR_Draw_vertices;
+        std::vector<Vertex>  initial_Vel_BAR_Draw_vertices ;
+        std::vector<Vertex>  angular_Vel_BAR_Draw_vertices ;
+
+        for ( unsigned int i=0; i<BAR_vertices.size(); i++ ) 
+        {
+            arma::fcolvec v = BAR_vertices[i].getHomg();
+            arma::fcolvec vp = models_transf[7] * v;
+            Vertex rv0 = Vertex();
+            rv0.set_value(arma::trans(vp));
+            mass_BAR_Draw_vertices.push_back(rv0);
+
+         
+            vp = models_transf[8] * v;
+            Vertex rv1 = Vertex();
+            rv1.set_value(arma::trans(vp));
+            jump_BAR_Draw_vertices.push_back(rv1);
+
+             
+
+            vp = models_transf[9] * v;
+            Vertex rv2 = Vertex();
+            rv2.set_value(arma::trans(vp));
+            initial_Vel_BAR_Draw_vertices.push_back(rv2);
+
+
+            vp = models_transf[10] * v;
+            Vertex rv3 = Vertex();
+            rv3.set_value(arma::trans(vp));
+            angular_Vel_BAR_Draw_vertices.push_back(rv3);
+        }
+
+/*********************************************************************+
+ * 
+ * 
+ * ARROW
+ * 
+ * 
+ * **************************************************************************/
+
+        std::vector<Vertex>  Arrow_vertices = models[8].get_faces_verts();
+        models_time[11].Restart();
+        models_transf[11] = Trans.T(-0.93,0.65,0.0)*Trans.S(0.050,0.050,0.050);
+
+        models_time[12].Restart();
+        models_transf[12] = Trans.T(-0.63,0.15,0.0)*Trans.S(0.050,0.050,0.050);
+
+        models_time[13].Restart();
+        models_transf[13] = Trans.T(-0.33,-0.35,0.0)*Trans.S(0.050,0.050,0.050);
+
+        models_time[14].Restart();
+        models_transf[14] = Trans.T(-0.03,-0.85,0.0)*Trans.S(0.050,0.050,0.050);
+
+
+      /*models_transf[7] = Trans.T(-0.50,0.68,0.0)*Trans.S(0.1500,0.1500,0.1500) ;
+        models_transf[8] = Trans.T(-0.20,0.18,0.0)*Trans.S(0.1500,0.1500,0.1500);
+        models_transf[9] = Trans.T(0.10,-0.32,0.0)*Trans.S(0.1500,0.1500,0.1500);
+        models_transf[10] = Trans.T(0.40,-0.82,0.0)*Trans.S(0.1500,0.1500,0.1500) ;*/
+
+
+        std::vector<Vertex>  mass_Arrow_Draw_vertices ;
+        std::vector<Vertex>  jump_Arrow_Draw_vertices;
+        std::vector<Vertex>  initial_Vel_Arrow_Draw_vertices ;
+        std::vector<Vertex>  angular_Vel_Arrow_Draw_vertices ;
+
+        for ( unsigned int i=0; i<Arrow_vertices.size(); i++ ) 
+        {
+            arma::fcolvec v = Arrow_vertices[i].getHomg();
+            arma::fcolvec vp = models_transf[11] * v;
+            Vertex rv0 = Vertex();
+            rv0.set_value(arma::trans(vp));
+            mass_Arrow_Draw_vertices.push_back(rv0);
+
+            vp = models_transf[12] * v;
+            Vertex rv1 = Vertex();
+            rv1.set_value(arma::trans(vp));
+            jump_Arrow_Draw_vertices.push_back(rv1);
+
+            vp = models_transf[13] * v;
+            Vertex rv2 = Vertex();
+            rv2.set_value(arma::trans(vp));
+            initial_Vel_Arrow_Draw_vertices.push_back(rv2);
+
+            vp = models_transf[14] * v;
+            Vertex rv3 = Vertex();
+            rv3.set_value(arma::trans(vp));
+            angular_Vel_Arrow_Draw_vertices.push_back(rv3);
+        }
+
+
+
+        float angular_Velocity =  (360.0) / 4.0;
+
+        print("Do");
+    
+do
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    //glLoadIdentity();
+   
+         draw(mass_text_draw_vertices,Color3f(0.5,0.7,0.3));
+         draw(jump_text_draw_vertices,Color3f(0.5,0.7,0.3)); 
+         draw(initial_Vel_text_draw_vertices,Color3f(0.5,0.7,0.3));
+         draw(angular_Vel_text_draw_vertices,Color3f(0.5,0.7,0.3));
+
+         //draw(mass_BAR_Draw_vertices,Color3f(0.5,0.7,0.3));
+         draw(mass_BAR_Draw_vertices,Color3f(0.0,1.0,0.0),Color3f(1.0,0.0,0.0),0,-0.45);
+         draw(mass_BAR_Draw_vertices,Color3f(0.5,0.7,0.3));
+         draw(jump_BAR_Draw_vertices,Color3f(0.5,0.7,0.3)); 
+         draw(initial_Vel_BAR_Draw_vertices,Color3f(0.5,0.7,0.3));
+         draw(angular_Vel_BAR_Draw_vertices,Color3f(0.5,0.7,0.3));
+
+         draw(mass_Arrow_Draw_vertices,Color3f(0.5,0.7,0.3));
+         draw(jump_Arrow_Draw_vertices,Color3f(0.5,0.7,0.3)); 
+         draw(initial_Vel_Arrow_Draw_vertices,Color3f(0.5,0.7,0.3));
+         draw(angular_Vel_Arrow_Draw_vertices,Color3f(0.5,0.7,0.3));
+
+         draw(parameters_text_draw_vertices,Color3f(0.3, 0.66, 1.0));
+
+    glEnd();
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+models_time[0].Restart();
+}while( glfwGetKey(window,GLFW_KEY_SPACE) != GLFW_PRESS &&  glfwGetKey(window,GLFW_KEY_ENTER) != GLFW_PRESS   && glfwWindowShouldClose(window) == 0);
+
+glfwTerminate();
+return 0;
 }
 
 //this is a function for the whole simulation.
@@ -381,6 +761,13 @@ int animationWindow()
 
 }
 
+
+
+
+/******************************************************
+ *  other
+ * *****************************************************/
+//for "debuging".
 void print(std::string printing)
 {
     cout<<endl<< printing << endl;

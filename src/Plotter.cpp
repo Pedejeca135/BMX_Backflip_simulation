@@ -198,6 +198,7 @@ void draw(vector<Object> objs, Color3f color){
         draw(objs[i], color);
     }
 }
+
 void draw(Object obj, float scale, Color3f color){
 
 	for(int f = 0; f < obj.faces.size(); f++) 
@@ -237,6 +238,54 @@ void draw(vector<Vertex> vertices, Color3f color)
 }
 
 
+void draw(vector<Vertex> vertices, Color3f primario, Color3f secundario, int eje, float limite)
+{
+	
+        glBegin(GL_TRIANGLES);
+        for ( unsigned int i=0; i<vertices.size(); i++ ) {
+
+			
+			if(eje == 0)
+			{
+				if(vertices[i].x < limite)
+				{
+					glColor3f(primario.r, primario.g, primario.b);
+				}
+				else
+				{
+					glColor3f(secundario.r, secundario.g, secundario.b);
+				}
+				
+			}
+			else if(eje == 1)
+			{
+				if(vertices[i].y < limite)
+				{
+					glColor3f(primario.r, primario.g, primario.b);
+				}
+				else
+				{
+					glColor3f(secundario.r, secundario.g, secundario.b);
+				}
+			}
+			else
+			{
+				if(vertices[i].z < limite)
+				{
+					glColor3f(primario.r, primario.g, primario.b);
+				}
+				else
+				{
+					glColor3f(secundario.r, secundario.g, secundario.b);
+				}				
+			}
+			
+
+            arma::frowvec vert = vertices[i].get_value();
+            glVertex3f(vert[0], vert[1], vert[2]);
+        }
+        glEnd();
+}
 
         
 
