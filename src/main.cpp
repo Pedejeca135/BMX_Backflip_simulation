@@ -213,8 +213,6 @@ int main( void )
     
 
 
-
-
     int res_AnimationW;
 
     do{
@@ -235,8 +233,6 @@ int main( void )
         }
         
     }while (res_AnimationW == 2 );
-   
-  
 
     glfwTerminate();
 
@@ -915,6 +911,19 @@ return 0;
 }
 
 
+bool keyPressed = false;
+void key_callback_Animation(GLFWwindow * window, int key, int scancode, int action, int mods)
+{
+    if(key > 261 && key <268 && (action == GLFW_PRESS || action == GLFW_REPEAT))
+    keyPressed = true;
+    else
+    {
+        keyPressed =  false;
+    }    
+}
+
+
+
 /****************************************************
  * 
  * ANIMATION
@@ -949,7 +958,7 @@ int animationWindow()
     float ar = width/height;
 
     //perspectic projection
-    glFrustum(-ar,ar,-ar,ar,1,10.0);
+    glFrustum(-ar,ar,-ar,ar,1,4.0);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -957,7 +966,7 @@ int animationWindow()
 
         std::vector<Vertex>  ramp_vertices = models[10].get_faces_verts();
         models_time[15].Restart();
-        models_transf[15] = Trans.T(0.0,0.0,0.0)*Trans.S(0.0030,0.0030,0.0030) * Trans.R(0.0,1.0,0.0,5.0);//
+        models_transf[15] = Trans.S(0.0030,0.0030,0.0030) ;//
         
          std::vector< Vertex > ramp_draw_vertices;
         for ( unsigned int i=0; i<ramp_vertices.size(); i++ ) 
@@ -969,52 +978,89 @@ int animationWindow()
             ramp_draw_vertices.push_back(rv);
         }
 
+        Object distancias;
+        distancias = Object();
+        arma::fmat transformation_distancias =  Tr.S(0.025,0.025,0.025);
+        arma::fmat transformation_distancias_F =  Tr.T(1.55,0.0,0.0) * Tr.S(0.025,0.025,0.025);
+        arma::fmat ar_trans = Tr.T(1.55,0.67,0.0) * Tr.S(0.025,0.025,0.025);
 
+        distancias.init("./models/sphere.obj");
 
-
-   //color para la rampa  Color3f(0.65, 0.32, 0.055);
-
-  /*
-        float t_angle = 0;
-        float a_angle = 0;
-        std::vector<Vertex>  bmx_vertices = models[0].get_faces_verts();
-        models_time[0].Restart();
-
-        std::vector<Vertex>  title_vertices = models[1].get_faces_verts();
-        models_time[1].Restart();
-        models_transf[1] = Trans.T(0.0,0.65,0.0)*Trans.S(0.0030,0.0030,0.0030) * Trans.R(0.0,1.0,0.0,5.0);//
+        std::vector<Vertex>  de_sphere_vertices = distancias.get_faces_verts();
         
-        std::vector<Vertex>  continue_vertices = models[2].get_faces_verts();
-        models_time[2].Restart();
-        models_transf[2] = Trans.T(0.0,-0.70,0.0)*Trans.S(0.00205,0.00205,0.00205) * Trans.R(0.0,1.0,0.0,5.0);//
-
-         std::vector< Vertex > title_draw_vertices;
-        for ( unsigned int i=0; i<title_vertices.size(); i++ ) 
+        std::vector< Vertex > de_sphere_draw_vertices;
+        std::vector<Vertex> df_sphere_draw_vertices;
+        std::vector<Vertex> ar_draw_vertices;
+        for ( unsigned int i=0; i<de_sphere_vertices.size(); i++ ) 
         {
-            arma::fcolvec v = title_vertices[i].getHomg();
-            arma::fcolvec vp = models_transf[1] * v;
+            arma::fcolvec v = de_sphere_vertices[i].getHomg();
+            arma::fcolvec vp =  transformation_distancias* v;
             Vertex rv = Vertex();
             rv.set_value(arma::trans(vp));
-            title_draw_vertices.push_back(rv);
+            de_sphere_draw_vertices.push_back(rv);
+
+            vp = transformation_distancias_F * v;
+            rv =  Vertex();
+            rv.set_value(arma::trans(vp)); 
+            df_sphere_draw_vertices.push_back(rv);
+
+            vp = ar_trans * v;
+            rv =  Vertex();
+            rv.set_value(arma::trans(vp)); 
+            ar_draw_vertices.push_back(rv);
         }
 
-         std::vector< Vertex > continue_draw_vertices;
-        for ( unsigned int i=0; i<continue_vertices.size(); i++ ) 
+        Object bm;
+        bm = Object();
+        bm.init("./models/BMX.obj");
+        arma::fmat trans_BM = Tr.T(-3.0,0.07,0.0) * Tr.S(0.0030,0.0030,0.0030);//* Trans.R(0.0f,0.0f,1.0f,20.0);        
+        std::vector<Vertex>  bm_vertices = bm.get_faces_verts();
+        
+        std::vector< Vertex > bm_draw_vertices;
+        for ( unsigned int i=0; i<bm_vertices.size(); i++ ) 
         {
-            arma::fcolvec v = continue_vertices[i].getHomg();
-            arma::fcolvec vp = models_transf[2] * v;
+            arma::fcolvec v = bm_vertices[i].getHomg();
+            arma::fcolvec vp =  trans_BM* v;
             Vertex rv = Vertex();
             rv.set_value(arma::trans(vp));
-            continue_draw_vertices.push_back(rv);
+            bm_draw_vertices.push_back(rv);
         }
 
-        float angular_Velocity =  (360.0) / 4.0;*/
-
+        arma::fmat trans_BM_1 = Tr.T(-0.07,0.07,0.0) * Tr.S(0.0030,0.0030,0.0030);//* Trans.R(0.0f,0.0f,1.0f,20.0);
         
+        std::vector< Vertex > bm_1_draw_vertices;
+        for ( unsigned int i=0; i<bm_vertices.size(); i++ ) 
+        {
+            arma::fcolvec v = bm_vertices[i].getHomg();
+            arma::fcolvec vp =  trans_BM_1* v;
+            Vertex rv = Vertex();
+            rv.set_value(arma::trans(vp));
+            bm_1_draw_vertices.push_back(rv);
+        }
+
+        arma::fmat trans_BM_2 = Tr.T(0.0,0.07,0.0) * Tr.S(0.0030,0.0030,0.0030) * Trans.R(0.0f,0.0f,1.0f,14.0);
+        
+        std::vector< Vertex > bm_2_draw_vertices;
+        for ( unsigned int i=0; i<bm_vertices.size(); i++ ) 
+        {
+            arma::fcolvec v = bm_vertices[i].getHomg();
+            arma::fcolvec vp =  trans_BM_2 * v;
+            Vertex rv = Vertex();
+            rv.set_value(arma::trans(vp));
+            bm_2_draw_vertices.push_back(rv);
+        }
     
 do
 {
-    res = keyPress(&window,eye,camera);
+   glfwSetKeyCallback(window,key_callback_Animation);
+   if(keyPressed == true)
+   res = keyPress(&window,eye,camera);
+
+
+    
+
+
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glMatrixMode(GL_MODELVIEW);
@@ -1022,7 +1068,17 @@ do
     gluLookAt(eye[0],eye[1], eye[2],camera[0],camera[1],camera[2],0.0,1.0,0.0);
     
     draw(ramp_draw_vertices,Color3f(0.65, 0.32, 0.055));
-   
+    draw(de_sphere_draw_vertices,Color3f(0.40,0.98,0.30));
+    
+
+    //draw(bm_draw_vertices,Color3f(0.40,0.98,0.30));
+
+    //draw(bm_1_draw_vertices,Color3f(0.40,0.98,0.30));
+
+   // draw(bm_2_draw_vertices, Color3f(0.40,0.98,0.30));
+   draw(df_sphere_draw_vertices,Color3f(0.40,0.98,0.30));
+   draw(ar_draw_vertices,Color3f(0.40,0.98,0.30));
+
 
     glEnd();
     glfwSwapBuffers(window);
