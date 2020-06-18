@@ -44,6 +44,9 @@ int animationWindow();
 
 void print(std::string printing);
 
+//
+arma::fmat bezier(arma:: fmat GH, float t);
+
 
 /*************************************************
  * Main function
@@ -981,8 +984,20 @@ int animationWindow()
         Object distancias;
         distancias = Object();
         arma::fmat transformation_distancias =  Tr.S(0.025,0.025,0.025);
-        arma::fmat transformation_distancias_F =  Tr.T(1.55,0.0,0.0) * Tr.S(0.025,0.025,0.025);
-        arma::fmat ar_trans = Tr.T(1.55,0.67,0.0) * Tr.S(0.025,0.025,0.025);
+        arma::fmat transformation_distancias_F =  Tr.T(1.58,0.0,0.0) * Tr.S(0.025,0.025,0.025);
+        arma::fmat ar_trans = Tr.T(1.58,0.69,0.0) * Tr.S(0.025,0.025,0.025);
+
+        //s_ani ************************************************************** s_ani
+        arma::fmat s_ani = Tr.T(0.0,0.0,0.0) * Tr.S(0.030,0.030,0.030);
+        
+        float t = 0.0;
+        float dt = 0.005;
+        arma:: fmat GH = {{0.0, 0.0, 0.0}, //P1
+                      {0.513,0.15,0.0}, //P4
+                      {1.15, 0.35, 0.0}, //R1
+                      {1.581, 0.69, 0.0} //R4
+                      };
+
 
         distancias.init("./models/sphere.obj");
 
@@ -1008,6 +1023,11 @@ int animationWindow()
             rv =  Vertex();
             rv.set_value(arma::trans(vp)); 
             ar_draw_vertices.push_back(rv);
+
+           /* vp = s_ani * v;
+            rv =  Vertex();
+            rv.set_value(arma::trans(vp)); 
+            s_ani_draw_vertices.push_back(rv);*/
         }
 
         Object bm;
@@ -1056,17 +1076,29 @@ do
    if(keyPressed == true)
    res = keyPress(&window,eye,camera);
 
-
-    
-
-
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+
     gluLookAt(eye[0],eye[1], eye[2],camera[0],camera[1],camera[2],0.0,1.0,0.0);
     
+        arma::fmat s_ani_res_fmat = bezier(GH,t);
+        t += dt;
+        cout<< s_ani_res_fmat << endl;
+        s_ani = Tr.T(s_ani_res_fmat[0], s_ani_res_fmat[1] + (40 * 0.003), s_ani_res_fmat[2])* Tr.S(0.030, 0.030, 0.030);
+        std::vector<Vertex> s_ani_draw_vertices;
+        for ( unsigned int i=0; i<de_sphere_vertices.size(); i++ ) 
+        {
+            arma::fcolvec v = de_sphere_vertices[i].getHomg();
+            arma::fcolvec vp =  s_ani * v;
+            Vertex rv = Vertex();
+            rv.set_value(arma::trans(vp));
+            s_ani_draw_vertices.push_back(rv);
+        }
+
+        draw(s_ani_draw_vertices, Color3f(0.0, 0.20, 0.67));
+
     draw(ramp_draw_vertices,Color3f(0.65, 0.32, 0.055));
     draw(de_sphere_draw_vertices,Color3f(0.40,0.98,0.30));
     
@@ -1077,7 +1109,7 @@ do
 
    // draw(bm_2_draw_vertices, Color3f(0.40,0.98,0.30));
    draw(df_sphere_draw_vertices,Color3f(0.40,0.98,0.30));
-   draw(ar_draw_vertices,Color3f(0.40,0.98,0.30));
+   //draw(ar_draw_vertces,Color3f(0.40,0.98,0.30));
 
 
     glEnd();
@@ -1089,6 +1121,28 @@ models_time[0].Restart();
 glfwTerminate();
 return res;
 }
+
+
+
+/******************************
+funcion para obtener los puntos de bezier
+*********************************************/
+arma::fmat MH = {{-1.0, 3.0, -3.0, 1.0},
+                     {3.0, -6.0, 3.0, 0.0},
+                     {-3.0, 3.0, 0.0, 0.0},
+                     {1.0, 0.0, 0.0, 0.0}
+                     };
+
+arma::fmat bezier(arma:: fmat GH, float t)
+{
+    arma::frowvec T = {powf(t,3),powf(t,2),t,1.0};
+    arma :: fmat Qt  = T * MH * GH;
+    return Qt;
+}
+
+
+
+
 
 
 /******************************************************
