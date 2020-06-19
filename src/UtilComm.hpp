@@ -21,4 +21,17 @@ class Timer {
 };
 
 
+/******************************
+funcion para obtener los puntos de bezier
+*********************************************/
+arma::fmat MH = {{-1.0, 3.0, -3.0, 1.0},
+                     {3.0, -6.0, 3.0, 0.0},
+                     {-3.0, 3.0, 0.0, 0.0},
+                     {1.0, 0.0, 0.0, 0.0}
+                     };
+
+arma::fmat bezier(arma:: fmat GH, float t);
+
+
+
 #endif

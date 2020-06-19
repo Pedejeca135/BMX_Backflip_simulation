@@ -15,3 +15,11 @@ double Timer::Delta() {
 	return diff;
 }
 
+
+arma::fmat bezier(arma:: fmat GH, float t)
+{
+    arma::frowvec T = {powf(t,3),powf(t,2),t,1.0};
+    arma :: fmat Qt  = T * MH * GH;
+    return Qt;
+}
+

@@ -1069,6 +1069,8 @@ int animationWindow()
             rv.set_value(arma::trans(vp));
             bm_2_draw_vertices.push_back(rv);
         }
+
+        BMX bicicle = BMX();
     
 do
 {
