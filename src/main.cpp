@@ -310,6 +310,12 @@ int keyPress(GLFWwindow** window,float eye[3], float camera[3])
 			camera[2] -= 0.05;
             return 0;
 		}
+        else if(glfwGetKey(*window, GLFW_KEY_KP_SUBTRACT ) == GLFW_PRESS)//get farther
+        {
+            eye[2] -= 0.05;
+			camera[2] -= 0.05;
+            return 0;
+        }
 		else if(glfwGetKey(*window, GLFW_KEY_R ) == GLFW_PRESS)//rewind the whole move.
         {
             return 1;
