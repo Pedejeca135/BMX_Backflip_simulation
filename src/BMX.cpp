@@ -1,23 +1,24 @@
 #include"BMX.hpp"
 
 
-BMX::BMX(Object model, float scale, float mass, float jump, Color3f color, arma::fmat transformation, Vertex aceleration, Vertex velocity, Vertex position, Vertex angular_Aceleration, Vertex angular_Velocity, Vertex rotation_Angle, Vertex rampIni, Vertex rampEnd)
+BMX::BMX(Object model, float scale, float jumpAngle, float jump, Color3f color, arma::fmat transformation, Vertex aceleration, Vertex velocity, Vertex position, Vertex angular_Aceleration, Vertex angular_Velocity, Vertex rotation_Angle, Vertex rampIni, Vertex rampEnd)
 {           
     std::vector<Vertex> model_vertices = model.get_faces_verts();
 
     this->scale = scale;
-    this->mass = mass;
+    this->jumpAngle = jumpAngle;
     this->jump = jump;
     this->color = color;
     this->transformation = transformation;
 
-    this->aceleration = aceleration;
-    this->velocity = velocity;
-    this->position = position;
+    this->aceleration = aceleration;//m/s*s
+    this->velocity = velocity;// in m/s
 
-    this->angular_Aceleration = angular_Aceleration;
-    this->angular_Velocity = angular_Velocity;
-    this->rotation_Angle = rotation_Angle;
+    this->position = position;//escaled
+
+    this->angular_Aceleration = angular_Aceleration;// 
+    this->angular_Velocity = angular_Velocity;//m/s
+    this->rotation_Angle = rotation_Angle;//360.
 
     this->rampIni = rampIni;
     this->rampEnd = rampEnd;
@@ -25,26 +26,77 @@ BMX::BMX(Object model, float scale, float mass, float jump, Color3f color, arma:
 
 void BMX::makeStep()
 {
-    
-    if(rampDone == false)
-    {        
-        if(bezier(,))
+    double delta = t.Delta();
+    double time = delta - positionLastTime ;
+    positionLastTime = delta;
+
+    if(befRampDone == false)
+    {
+        if(position.x > rampIni.x)
         {
-            position.x > rampEnd.x;
+            befRampDone = true;            
+            t.Restart();
+            positionLastTime = t.Delta();
         }
+        else
+        {            
+            calculatePosition();
+        }        
+    }
+    else if(rampDone == false)
+    {           
+        dt_factor = VelocityScaled().x / scaled(rampEnd.x);
+        dt_Bezier = dt_factor * time;
+        t_Bezier += dt_Bezier;
+        arma::fmat newPosition = bezier(GH1, t_Bezier);
+        position.x = newPosition[0];
+        position.y = newPosition[1];
+        position.z = newPosition[2];
+
+        transformation = Tr.T(position.x, position.y + alturaModel, position.z)* Tr.S(scale, scale, scale)* Tr.R(1.0, 0.0, 0.0,rotation_Angle.x ) * Tr.R(0.0,1.0, 0.0, rotation_Angle.y) * Tr.R(0.0, 0.0 ,1.0, rotation_Angle.z) ;
+
+        if(position.x > scaled(23))
+        {
+            rotation_Angle.z = 15.0;
+        }
+        if(position.x > scaled(95))
+        {
+            rotation_Angle.z = 17.68;
+        }
+        if(position.x > scaled(195) )
+        {
+            rotation_Angle.z = 20.00;
+        }
+        if(position.x > rampEnd.x || t_Bezier > 1)
+        {
+            t_Bezier = 0.0;
+            rampDone = true;
+            t.Restart();
+            positionLastTime = t.Delta();
+        }        
     }
     else if (jumpDone == false)
     {
-        
-    }
-    else if(backFlipDone == false)
-    {
+        float v0 = pow((aceleration.y*2)*jumpScaled()*(1.0/pow(sin(jumpAngle),2)) ,0.5);
+        position.y = scaled(rampEnd.y) + (v0 * sin(jumpAngle) * time) - ( aceleration.y * time * time);
+        position.x += scaledPhysic(velocity.x) * time;
 
+        if(position.y > (scaled(rampEnd.y) + jumpScaled()) /2)
+        {
+            rotation_Angle.z += angular_Velocity.z * time;
+        }
+        if(position.y > scaled(rampEnd.y) + jumpScaled())
+        {
+            jumpDone = true;
+            t.Restart();
+            positionLastTime = t.Delta();
+        }
+        transformation = Tr.T(position.x, position.y + alturaModel, position.z)* Tr.S(scale, scale, scale)* Tr.R(1.0, 0.0, 0.0,rotation_Angle.x ) * Tr.R(0.0,1.0, 0.0, rotation_Angle.y) * Tr.R(0.0, 0.0 ,1.0, rotation_Angle.z) ;
     }
     else // just being around.
     {
 
-    }
+   }
     
 
 }
@@ -71,7 +123,8 @@ arma::fmat BMX::Transformation()
 {
     calculatePosition();
     calculateRotation();
-    return  Tr.T(position.x, position.y, position.z) * Tr.S(scale, scale, scale)* Tr.R(rotation_Angle.x,rotation_Angle.y, rotation_Angle.z);
+    return  Tr.T(position.x, position.y + alturaModel, position.z)* Tr.S(scale, scale, scale)* Tr.R(1.0, 0.0, 0.0,rotation_Angle.x ) * Tr.R(0.0,1.0, 0.0, rotation_Angle.y) * Tr.R(0.0, 0.0 ,1.0, rotation_Angle.z) ;
+    
 }
      
 void BMX::calculatePosition()
@@ -104,4 +157,26 @@ void BMX::calculateRotation()
 
     angular_Velocity.z = angular_Velocity.z + (angular_Aceleration.z * time);
     rotation_Angle.z = rotation_Angle.z + (angular_Velocity.z * time);
+}
+
+Vertex BMX::VelocityScaled()
+{
+    Vertex res = Vertex(velocity.x * scale, velocity.y * scale, velocity.z * scale);
+    return res;
+} 
+
+float BMX::jumpScaled()
+{
+    return jump * scaled(rateScale);
+}
+
+float BMX::scaledPhysic(float toScale)
+{
+    return toScale * scaled(rateScale);
+
+}
+
+float BMX::scaled(float toScale)
+{
+    return toScale * scale;
 }
