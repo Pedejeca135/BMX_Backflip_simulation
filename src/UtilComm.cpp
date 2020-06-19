@@ -16,10 +16,25 @@ double Timer::Delta() {
 }
 
 
-arma::fmat bezier(arma:: fmat GH, float t)
+arma::fmat bezier_(arma:: fmat GH, float t)
 {
     arma::frowvec T = {powf(t,3),powf(t,2),t,1.0};
-    arma :: fmat Qt  = T * MH * GH;
+    arma :: fmat Qt  = T * MH_() * GH;
     return Qt;
 }
 
+
+arma::fmat MH_()
+{
+/******************************
+funcion para obtener los puntos de bezier
+*********************************************/
+arma::fmat MH = {{-1.0, 3.0, -3.0, 1.0},
+                     {3.0, -6.0, 3.0, 0.0},
+                     {-3.0, 3.0, 0.0, 0.0},
+                     {1.0, 0.0, 0.0, 0.0}
+                     };
+
+					 return MH;
+
+}

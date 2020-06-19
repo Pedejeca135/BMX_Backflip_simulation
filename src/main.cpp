@@ -45,7 +45,7 @@ int animationWindow();
 void print(std::string printing);
 
 //
-arma::fmat bezier(arma:: fmat GH, float t);
+//arma::fmat bezier(arma:: fmat GH, float t);
 
 
 /*************************************************
@@ -998,7 +998,7 @@ int animationWindow()
         
         float t = 0.0;
         float dt = 0.005;
-        arma:: fmat GH = {{0.0, 0.0, 0.0}, //P1
+        arma:: fmat GHH = {{0.0, 0.0, 0.0}, //P1
                       {0.513,0.15,0.0}, //P2
                       {1.15, 0.35, 0.0}, //P3
                       {1.581, 0.69, 0.0} //P4
@@ -1091,7 +1091,7 @@ do
 
     gluLookAt(eye[0],eye[1], eye[2],camera[0],camera[1],camera[2],0.0,1.0,0.0);
     
-        arma::fmat s_ani_res_fmat = bezier(GH,t);
+        arma::fmat s_ani_res_fmat = bezier_(GHH,t);
         t += dt;
         cout<< s_ani_res_fmat << endl;
         s_ani = Tr.T(s_ani_res_fmat[0], s_ani_res_fmat[1] + (40 * 0.003), s_ani_res_fmat[2])* Tr.S(0.030, 0.030, 0.030);
@@ -1129,27 +1129,6 @@ models_time[0].Restart();
 glfwTerminate();
 return res;
 }
-
-
-/*
-/******************************
-funcion para obtener los puntos de bezier
-*********************************************
-arma::fmat MH = {{-1.0, 3.0, -3.0, 1.0},
-                     {3.0, -6.0, 3.0, 0.0},
-                     {-3.0, 3.0, 0.0, 0.0},
-                     {1.0, 0.0, 0.0, 0.0}
-                     };
-
-arma::fmat bezier(arma:: fmat GH, float t)
-{
-    arma::frowvec T = {powf(t,3),powf(t,2),t,1.0};
-    arma :: fmat Qt  = T * MH * GH;
-    return Qt;
-}
-*/
-
-
 
 
 

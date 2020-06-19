@@ -5,7 +5,7 @@
 #include <time.h>
 #include <chrono>
 #include <sys/time.h>
-#include<armadillo>
+#include <armadillo>
 
 #define PI 3.14159265358979
 
@@ -22,16 +22,8 @@ class Timer {
 };
 
 
-/******************************
-funcion para obtener los puntos de bezier
-*********************************************/
-arma::fmat MH = {{-1.0, 3.0, -3.0, 1.0},
-                     {3.0, -6.0, 3.0, 0.0},
-                     {-3.0, 3.0, 0.0, 0.0},
-                     {1.0, 0.0, 0.0, 0.0}
-                     };
-
-arma::fmat bezier(arma:: fmat GH, float t);
+arma::fmat MH_();
+arma::fmat bezier_(arma:: fmat GH, float t);
 
 
 

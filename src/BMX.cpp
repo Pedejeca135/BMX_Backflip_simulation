@@ -48,7 +48,7 @@ void BMX::makeStep()
         dt_factor = VelocityScaled().x / scaled(rampEnd.x);
         dt_Bezier = dt_factor * time;
         t_Bezier += dt_Bezier;
-        arma::fmat newPosition = bezier(GH1, t_Bezier);
+        arma::fmat newPosition = bezier_(GH1, t_Bezier);
         position.x = newPosition[0];
         position.y = newPosition[1];
         position.z = newPosition[2];
