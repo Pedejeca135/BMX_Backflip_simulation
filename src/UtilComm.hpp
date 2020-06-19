@@ -5,6 +5,7 @@
 #include <time.h>
 #include <chrono>
 #include <sys/time.h>
+#include<armadillo>
 
 #define PI 3.14159265358979
 

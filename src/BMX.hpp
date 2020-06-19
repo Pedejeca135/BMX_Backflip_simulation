@@ -10,26 +10,48 @@ class BMX
 
 //##################### PUBLIC ####################################3
     public:
-    BMX(float masa, float initial_Velocity, float impulse, float angular_Velocity, Object model , Color3f color, arma::fmat transformation, Vertex pos,Vertex rampIni, Vertex rampEnd);
+    BMX::BMX(Object model, float scale, float mass, float jump, Color3f color, arma::fmat transformation, Vertex aceleration, Vertex velocity, Vertex position, Vertex angular_Aceleration, Vertex angular_Velocity, Vertex rotation_Angle, Vertex rampIni, Vertex rampEnd);
     void makeStep();
+    void draw();
+    arma::fmat Transformation();
+    void calculatePosition();
+    double positionLastTime = 0.0;
+    void calculateRotation();
+    double rotationLastTime = 0.0;
+
     Timer t = Timer();
-    Object obj_BMX_Model;    
-    arma::fmat transformation;
+    Transform Tr = Transform();
+
+
+    Object obj_BMX_Model;
     std::vector<Vertex> model_vertices;
-    
+    bool rampDone = false;
+    float t = 0.0;
+    float dt = 0.01;
+    bool jumpDone = false;
+    bool backFlipDone = false; 
 //############################ PRIVATE ###############################################
     private:
-    float masa = 0;
-    float initial_Velocity = 0;
-    float impulse = 0;
-    float angular_Velocity = 0;
-    Color3f Color;
-    Vertex position = Vertex(0.0,0.0,0.0);
+    float scale = 0.003;
+    float mass = 0;
+    float jump = 0;
+    Color3f color;
+    arma::fmat transformation;
 
-    Vertex rampIni_X;
-    Vertex rampFinal_X;
+/************************
+*   vectorial parameters
+*************************/
+    Vertex aceleration;
+    Vertex velocity;
+    Vertex position;
 
-    void step();
-    void draw();
+    Vertex angular_Aceleration;
+    Vertex angular_Velocity;
+    Vertex rotation_Angle;
+
+    Vertex rampIni;
+    Vertex rampEnd;
+
+    
 };
 

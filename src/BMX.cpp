@@ -1,28 +1,60 @@
 #include"BMX.hpp"
 
-    BMX::BMX(float masa, float initial_Velocity, float impulse, float angular_Velocity, Object model , Color3f color, arma::fmat transformation,Vertex pos, Vertex rampIni, Vertex rampEnd)
+
+BMX::BMX(Object model, float scale, float mass, float jump, Color3f color, arma::fmat transformation, Vertex aceleration, Vertex velocity, Vertex position, Vertex angular_Aceleration, Vertex angular_Velocity, Vertex rotation_Angle, Vertex rampIni, Vertex rampEnd)
+{           
+    std::vector<Vertex> model_vertices = model.get_faces_verts();
+
+    this->scale = scale;
+    this->mass = mass;
+    this->jump = jump;
+    this->color = color;
+    this->transformation = transformation;
+
+    this->aceleration = aceleration;
+    this->velocity = velocity;
+    this->position = position;
+
+    this->angular_Aceleration = angular_Aceleration;
+    this->angular_Velocity = angular_Velocity;
+    this->rotation_Angle = rotation_Angle;
+
+    this->rampIni = rampIni;
+    this->rampEnd = rampEnd;
+}
+
+void BMX::makeStep()
+{
+    
+    if(rampDone == false)
+    {        
+        if(bezier(,))
+        {
+            position.x > rampEnd.x;
+        }
+    }
+    else if (jumpDone == false)
     {
-        this->initial_Velocity = initial_Velocity;
-        this-> impulse = impulse;        
-        this->angular_Velocity = angular_Velocity;
-        this->transformation = transformation;
-        this->rampIni = rampIni;
-        this->rampEnd = rampEnd;
-        this->model_vertices = model.get_faces_verts();
-        this->position = pos;
+        
+    }
+    else if(backFlipDone == false)
+    {
 
     }
-
-    void step()
+    else
     {
 
     }
-    void draw()
-    {
-        std::vector< Vertex > draw_vertices;
-        glColor3f(color.r, color.g, color.b);
-        glBegin(GL_TRIANGLES);
-        for ( unsigned int i=0; i<this->model_vertices.size(); i++ ) 
+    
+
+}
+
+void BMX::draw()
+{
+    std::vector< Vertex > draw_vertices;
+    glColor3f(color.r, color.g, color.b);
+    glBegin(GL_TRIANGLES);
+    for ( unsigned int i=0; i<this->model_vertices.size(); i++ ) 
         {
             arma::fcolvec v = this->model_vertices[i].getHomg();
             arma::fcolvec vp =  this->transformation * v;
@@ -33,28 +65,43 @@
             glVertex3f(vert[0], vert[1], vert[2]);
         }
         glEnd();
-    }
+}
 
-    void step_RAMP()
-    {
-
-    }
-
-    void step_JUMP()
-    {
-
-    }
-
-    void step_BACK_FLIP()
-    {
-
-    }
-
-    void step_MANUAL()
-    {
-
-    }
+arma::fmat BMX::Transformation()
+{
+    calculatePosition();
+    calculateRotation();
+    return  Tr.T(position.x, position.y, position.z) * Tr.S(scale, scale, scale)* Tr.R(rotation_Angle.x,rotation_Angle.y, rotation_Angle.z);
+}
      
-     
+void BMX::calculatePosition()
+{
+    double delta = t.Delta();
+    double time = delta - positionLastTime ;
+    positionLastTime = delta;
 
-   
+    velocity.x = velocity.x + (aceleration.x * time);
+    position.x = position.x + (velocity.x * time);
+
+    velocity.y = velocity.y + (aceleration.y * time);
+    position.y = position.y + (velocity.y * time);
+
+    velocity.z = velocity.z + (aceleration.z * time);
+    position.z = position.z + (velocity.z * time);
+}
+
+void BMX::calculateRotation()
+{
+    double delta = t.Delta();
+    double time = delta - rotationLastTime ;
+    rotationLastTime = delta;
+
+    angular_Velocity.x = angular_Velocity.x + (angular_Aceleration.x * time);
+    rotation_Angle.x = rotation_Angle.x + (angular_Velocity.x * time);
+
+    angular_Velocity.y = angular_Velocity.y + (angular_Aceleration.y * time);
+    rotation_Angle.y = rotation_Angle.y + (angular_Velocity.y * time);
+
+    angular_Velocity.z = angular_Velocity.z + (angular_Aceleration.z * time);
+    rotation_Angle.z = rotation_Angle.z + (angular_Velocity.z * time);
+}

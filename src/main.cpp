@@ -1070,7 +1070,7 @@ int animationWindow()
             bm_2_draw_vertices.push_back(rv);
         }
 
-        BMX bicicle = BMX();
+        //BMX bicicle = BMX();
     
 do
 {
