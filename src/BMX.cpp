@@ -41,7 +41,7 @@ void BMX::makeStep()
     {
 
     }
-    else
+    else // just being around.
     {
 
     }
