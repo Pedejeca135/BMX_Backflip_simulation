@@ -1,7 +1,7 @@
 #include"BMX.hpp"
 
 
-BMX::BMX(Object model, float scale, float jumpAngle, float jump, Color3f color, arma::fmat transformation, Vertex aceleration, Vertex velocity, Vertex position, Vertex angular_Aceleration, Vertex angular_Velocity, Vertex rotation_Angle, Vertex rampIni, Vertex rampEnd)
+BMX::BMX(Object model, float scale, float jumpAngle, float jump, Color3f color,  Vertex aceleration, Vertex velocity, Vertex position, Vertex angular_Aceleration, Vertex angular_Velocity, Vertex rotation_Angle, Vertex rampIni, Vertex rampEnd)
 {           
     std::vector<Vertex> model_vertices = model.get_faces_verts();
 
@@ -9,7 +9,6 @@ BMX::BMX(Object model, float scale, float jumpAngle, float jump, Color3f color, 
     this->jumpAngle = jumpAngle;
     this->jump = jump;
     this->color = color;
-    this->transformation = transformation;
 
     this->aceleration = aceleration;//m/s*s
     this->velocity = velocity;// in m/s

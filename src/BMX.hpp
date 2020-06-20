@@ -13,7 +13,7 @@ class BMX
 
 //##################### PUBLIC ####################################3
     public:
-    BMX(Object model, float scale, float mass, float jump, Color3f color, arma::fmat transformation, Vertex aceleration, Vertex velocity, Vertex position, Vertex angular_Aceleration, Vertex angular_Velocity, Vertex rotation_Angle, Vertex rampIni, Vertex rampEnd);
+    BMX(Object model, float scale, float mass, float jump, Color3f color, Vertex aceleration, Vertex velocity, Vertex position, Vertex angular_Aceleration, Vertex angular_Velocity, Vertex rotation_Angle, Vertex rampIni, Vertex rampEnd);
     void makeStep();
     void draw();
     arma::fmat Transformation();

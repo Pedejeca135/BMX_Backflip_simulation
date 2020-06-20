@@ -7,6 +7,7 @@
 #include "Transform.hpp"
 #include "Plotter.hpp"
 #include "UtilComm.hpp"
+#include "BMX.hpp"
 
 
 /*********************************************************
@@ -20,12 +21,16 @@ vector<Timer> models_time;
 
 Transform Tr = Transform();
 
-float shift_variables_offset[4];
-float shift_variables_vpn[4];
-float shift_variables_vpn_max[4];
-float shift_variables_delta[4];
+const int numVarCapture = 4;
 
-float arrow_vpn[4];
+float shift_variables_offset[numVarCapture];
+float shift_variables_vpn[numVarCapture];
+float shift_variables_vpn_max[numVarCapture];
+float shift_variables_delta[numVarCapture];
+
+float arrow_vpn[numVarCapture];
+
+const float scaleSimulation = 0.003;
 
 
 /*************************************************
@@ -180,27 +185,27 @@ int main( void )
     models_transf.push_back(Tr.S(0.1,0.1,0.1));
     models_time.push_back(Timer());
 
+        
+
+        shift_variables_vpn[0] = 5.0;//jump angle
+        shift_variables_vpn[1] = 2.0;//velocity
+        shift_variables_vpn[2] = 0.3;//jump
+        shift_variables_vpn[3] = 45;//angular velocity
+
         shift_variables_offset[0] = 0.0;
         shift_variables_offset[1] = 0.0;
         shift_variables_offset[2] = 0.0;
         shift_variables_offset[3] = 0.0;
 
-        shift_variables_vpn[0] = 40.0;
-        shift_variables_vpn[1] = 2.0;
-        shift_variables_vpn[2] = 0.5;
-        shift_variables_vpn[3] = 180;
-
         shift_variables_vpn_max[0] = 90.0;
-        shift_variables_vpn_max[1] = 10.0;
+        shift_variables_vpn_max[1] = 12.0;
         shift_variables_vpn_max[2] = 1.5;
-        shift_variables_vpn_max[3] = 360;
+        shift_variables_vpn_max[3] = 720;
 
-        shift_variables_delta[0] = 0.5;
-        shift_variables_delta[1] = 0.125;
-        shift_variables_delta[2] = 0.05;
-        shift_variables_delta[3] = 2.5;
-
-
+        shift_variables_delta[0] = (shift_variables_vpn_max[0] - shift_variables_vpn[0])/48 ; 
+        shift_variables_delta[1] = (shift_variables_vpn_max[1] - shift_variables_vpn[1])/48 ; 
+        shift_variables_delta[2] = (shift_variables_vpn_max[2] - shift_variables_vpn[2])/48 ; 
+        shift_variables_delta[3] = (shift_variables_vpn_max[3] - shift_variables_vpn[3])/48 ; 
 
     /************************************************
      * 
@@ -310,12 +315,6 @@ int keyPress(GLFWwindow** window,float eye[3], float camera[3])
 			camera[2] -= 0.05;
             return 0;
 		}
-        else if(glfwGetKey(*window, GLFW_KEY_KP_SUBTRACT ) == GLFW_PRESS)//get farther
-        {
-            eye[2] -= 0.05;
-			camera[2] -= 0.05;
-            return 0;
-        }
 		else if(glfwGetKey(*window, GLFW_KEY_R ) == GLFW_PRESS)//rewind the whole move.
         {
             return 1;
@@ -327,77 +326,27 @@ int keyPress(GLFWwindow** window,float eye[3], float camera[3])
 		return -1;
 }
 
-
-/**************************************************************************************************
- * 
- * 
- *      shift_variables_vpn[0] = 40.0;
-        shift_variables_vpn[1] = 2.0;
-        shift_variables_vpn[2] = 0.5;
-        shift_variables_vpn[3] = 180;
- * 
- * 
- * ***********************************************************************************************************/
-
-
-
 //key press actions on capturing values.
 int keyPressCapture(GLFWwindow** window, int  shiftCounter)
 {
 		if(glfwGetKey(*window,  GLFW_KEY_UP) == GLFW_PRESS || glfwGetKey(*window,  GLFW_KEY_RIGHT) == GLFW_PRESS)//increase the value.
 		{
-            if(shiftCounter == 0)
+            if(shiftCounter >= 0 &&  shiftCounter < numVarCapture )
             {
                 shift_variables_offset[shiftCounter] += shift_variables_delta[shiftCounter];
-                if(shift_variables_offset[shiftCounter] +  shift_variables_vpn[shiftCounter] > 90)
+                if(shift_variables_offset[shiftCounter] +  shift_variables_vpn[shiftCounter] > shift_variables_vpn_max[shiftCounter])
                 {
-                    shift_variables_offset[shiftCounter] = 90 - shift_variables_vpn[shiftCounter] ;
-                }
-            }
-            else if(shiftCounter == 1)
-            {
-                shift_variables_offset[shiftCounter] += shift_variables_delta[shiftCounter];
-                if(shift_variables_offset[shiftCounter]  + shift_variables_vpn[shiftCounter] > 10)
-                {
-                    shift_variables_offset[shiftCounter] = 10 - shift_variables_vpn[shiftCounter];
-                }
-            }
-            else if(shiftCounter == 2)
-            {
-                shift_variables_offset[shiftCounter] += shift_variables_delta[shiftCounter];
-                if(shift_variables_offset[shiftCounter] +shift_variables_vpn[shiftCounter] > 1.5)
-                {
-                    shift_variables_offset[shiftCounter] = 1.5 - shift_variables_vpn[shiftCounter];
-                }
-            }
-            else if(shiftCounter == 3)
-            {
-                shift_variables_offset[shiftCounter] += shift_variables_delta[shiftCounter];
-                if(shift_variables_offset[shiftCounter] + shift_variables_vpn[shiftCounter] > 360)
-                {
-                    shift_variables_offset[shiftCounter] = 360 - shift_variables_vpn[shiftCounter];
+                    shift_variables_offset[shiftCounter] = shift_variables_vpn_max[shiftCounter] - shift_variables_vpn[shiftCounter] ;
                 }
             }			
 		}
 		else if(glfwGetKey(*window,  GLFW_KEY_DOWN) == GLFW_PRESS || glfwGetKey(*window,  GLFW_KEY_LEFT) == GLFW_PRESS)//decreasse the value.
 		{
-			if(shiftCounter == 0)
+			if(shiftCounter >= 0 &&  shiftCounter < numVarCapture )
             {
                 shift_variables_offset[shiftCounter] -=shift_variables_delta[shiftCounter];
             }
-            else if(shiftCounter == 1)
-            {
-                shift_variables_offset[shiftCounter] -= shift_variables_delta[shiftCounter];
-            }
-            else if(shiftCounter == 2)
-            {
-                shift_variables_offset[shiftCounter]-= shift_variables_delta[shiftCounter];
-            }
-            else if(shiftCounter == 3)
-            {
-                shift_variables_offset[shiftCounter] -= shift_variables_delta[shiftCounter];                
-            }	
-
+                   
             if(shift_variables_offset[shiftCounter] < 0)
                 {
                     shift_variables_offset[shiftCounter] = 0;
@@ -592,13 +541,6 @@ int captureWindow()
         models_time[15].Restart();
         models_transf[15] = Trans.T(0.45,0.80,0.0)*Trans.S(0.0012,0.0012,0.0012);//
 
-        /*
-        Trans.T(-0.50,0.68,0.0)*
-        Trans.T(-0.20,0.18,0.0)
-         Trans.T(0.10,-0.32,0.0)
-         Trans.T(0.40,-0.82,0.0)
-        */
-
          std::vector< Vertex > mass_text_draw_vertices;
         for ( unsigned int i=0; i<mass_text_vertices.size(); i++ ) 
         {
@@ -708,14 +650,14 @@ int captureWindow()
  * 
  * 
  * **************************************************************************/
-float arrow_x[4];
-
-float arrow_vpn_x[4];
+        float arrow_x[numVarCapture];
+        float arrow_vpn_x[numVarCapture];
 
         arrow_vpn_x[0] = -0.93;
         arrow_vpn_x[1] = -0.63;
         arrow_vpn_x[2] = -0.33;
         arrow_vpn_x[3] = -0.03;
+
 
         std::vector<Vertex>  Arrow_vertices = models[8].get_faces_verts();
         models_time[11].Restart();
@@ -733,12 +675,6 @@ float arrow_vpn_x[4];
         models_time[14].Restart();
         arrow_x[3] = arrow_vpn_x[3] ;
         models_transf[14] = Trans.T(arrow_x[3] ,-0.85,0.0)*Trans.S(0.050,0.050,0.050);
-
-
-      /*models_transf[7] = Trans.T(-0.50,0.68,0.0)*Trans.S(0.1500,0.1500,0.1500) ;
-        models_transf[8] = Trans.T(-0.20,0.18,0.0)*Trans.S(0.1500,0.1500,0.1500);
-        models_transf[9] = Trans.T(0.10,-0.32,0.0)*Trans.S(0.1500,0.1500,0.1500);
-        models_transf[10] = Trans.T(0.40,-0.82,0.0)*Trans.S(0.1500,0.1500,0.1500) ;*/
 
 
         std::vector<Vertex>  mass_Arrow_Draw_vertices ;
@@ -779,7 +715,7 @@ do
    int antCont = counter;
          counter += keyPressCapture(&window, counter);
   
-        //mass
+        //jump angle
          if(counter == 0)
          {
              draw(mass_text_draw_vertices,Color3f(0.93,0.45,0.1));
@@ -1029,11 +965,6 @@ int animationWindow()
             rv =  Vertex();
             rv.set_value(arma::trans(vp)); 
             ar_draw_vertices.push_back(rv);
-
-           /* vp = s_ani * v;
-            rv =  Vertex();
-            rv.set_value(arma::trans(vp)); 
-            s_ani_draw_vertices.push_back(rv);*/
         }
 
         Object bm;
@@ -1076,7 +1007,14 @@ int animationWindow()
             bm_2_draw_vertices.push_back(rv);
         }
 
-        //BMX bicicle = BMX();
+        float jumpAngle = shift_variables_vpn[0] + shift_variables_offset[0];
+        float velocity = shift_variables_vpn[1] + shift_variables_offset[1];
+        float jump = shift_variables_vpn[2] + shift_variables_offset[2];
+        float angularVelocity = shift_variables_vpn[3] + shift_variables_offset[3];
+
+        BMX bicicle = BMX(bm, scaleSimulation , jumpAngle, jump, Color3f(0.6, 0.15, 0.8) ,
+        Vertex(0.0,0.0,0.0), Vertex(velocity, 0.0, 0.0), Vertex(-3.0, 0.0, 0.0),  Vertex(0.0, 0.0, 0.0),  
+        Vertex(0.0, 0.0, angularVelocity) ,  Vertex(0.0, 0.0, 0.0),  Vertex(0.0, 0.0 ,0.0) ,  Vertex(527.0, 230.0 ,0.0));
     
 do
 {
@@ -1094,11 +1032,11 @@ do
         arma::fmat s_ani_res_fmat = bezier_(GHH,t);
         t += dt;
         cout<< s_ani_res_fmat << endl;
-        s_ani = Tr.T(s_ani_res_fmat[0], s_ani_res_fmat[1] + (40 * 0.003), s_ani_res_fmat[2])* Tr.S(0.030, 0.030, 0.030);
+        s_ani = Tr.T(s_ani_res_fmat[0], s_ani_res_fmat[1] + (40 * 0.003), s_ani_res_fmat[2])* Tr.S(0.0030, 0.0030, 0.0030);
         std::vector<Vertex> s_ani_draw_vertices;
-        for ( unsigned int i=0; i<de_sphere_vertices.size(); i++ ) 
+        for ( unsigned int i=0; i<bm_vertices.size(); i++ ) 
         {
-            arma::fcolvec v = de_sphere_vertices[i].getHomg();
+            arma::fcolvec v = bm_vertices[i].getHomg();
             arma::fcolvec vp =  s_ani * v;
             Vertex rv = Vertex();
             rv.set_value(arma::trans(vp));
