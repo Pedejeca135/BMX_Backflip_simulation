@@ -41,6 +41,7 @@ void draw(vector<Object> objs, Color3f color);
 void draw(vector<Object> objs, float scale, Color3f color);
 void draw(Object obj, float scale, Color3f color);
 void draw(vector<Vertex> vertices, Color3f primario, Color3f secundario, int eje, float limite);
+void draw(vector<Vertex> vertices, arma::fmat transformation, Color3f color);
 
 
 void draw(vector<Vertex> vertices, Color3f color);

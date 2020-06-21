@@ -6,6 +6,7 @@
 #include <chrono>
 #include <sys/time.h>
 #include <armadillo>
+#include <stdio.h>
 
 #define PI 3.14159265358979
 
@@ -25,6 +26,10 @@ class Timer {
 arma::fmat MH_();
 arma::fmat bezier_(arma:: fmat GH, float t);
 
-
+/******************************************************
+ *  other
+ * *****************************************************/
+//for "debuging".
+void print_D(std::string printing);
 
 #endif

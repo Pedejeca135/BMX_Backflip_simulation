@@ -360,15 +360,13 @@ int keyPressCapture(GLFWwindow** window, int  shiftCounter)
 }
 
 
-/********************************************************************************************************
+/**************************************************************************************************************
  * 
  * 
- *                                                  
- *                                              WINDOWS FUNCTIONS
+ *                                              PRESENTATION WINDOWS.
  * 
- * ****************************************************************************************************/
-
-
+ * 
+ * ************************************************************************************************************/
 //this function is just for present the project.
 int presentationWindow()
 {
@@ -472,13 +470,13 @@ return 0;
 
 
 
-/***********************************************
+/**************************************************************************************************************
  * 
  * 
- *                  CAPTURE WINDOW.
+ *                                              CAPTURE WINDOW.
  * 
  * 
- * *****************************************************/
+ * ************************************************************************************************************/
 //this is for capture the values for the simulation.
 int captureWindow()
 {
@@ -651,6 +649,7 @@ int captureWindow()
  * 
  * **************************************************************************/
         float arrow_x[numVarCapture];
+        float arrow_y[numVarCapture];
         float arrow_vpn_x[numVarCapture];
 
         arrow_vpn_x[0] = -0.93;
@@ -658,23 +657,30 @@ int captureWindow()
         arrow_vpn_x[2] = -0.33;
         arrow_vpn_x[3] = -0.03;
 
+        arrow_y[0] = 0.65;
+        arrow_y[1] = 0.15;
+        arrow_y[2] = -0.35;
+        arrow_y[3] = -0.85;
+
+        int arrow_scale = 0.050;
+
 
         std::vector<Vertex>  Arrow_vertices = models[8].get_faces_verts();
         models_time[11].Restart();
         arrow_x[0] = arrow_vpn_x[0];
-        models_transf[11] = Trans.T(arrow_x[0],0.65,0.0)*Trans.S(0.050,0.050,0.050);
+        models_transf[11] = Trans.T(arrow_x[0],arrow_y[0],0.0)*Trans.S(arrow_scale,arrow_scale,arrow_scale);
 
         models_time[12].Restart();
         arrow_x[1] = arrow_vpn_x[1];
-        models_transf[12] = Trans.T(arrow_x[1],0.15,0.0)*Trans.S(0.050,0.050,0.050);
+        models_transf[12] = Trans.T(arrow_x[1],arrow_y[1],0.0)*Trans.S(arrow_scale,arrow_scale,arrow_scale);
 
         models_time[13].Restart();
         arrow_x[2] = arrow_vpn_x[2];
-        models_transf[13] = Trans.T(arrow_x[2],-0.35,0.0)*Trans.S(0.050,0.050,0.050);
+        models_transf[13] = Trans.T(arrow_x[2],arrow_y[2],0.0)*Trans.S(arrow_scale,arrow_scale,arrow_scale);
 
         models_time[14].Restart();
         arrow_x[3] = arrow_vpn_x[3] ;
-        models_transf[14] = Trans.T(arrow_x[3] ,-0.85,0.0)*Trans.S(0.050,0.050,0.050);
+        models_transf[14] = Trans.T(arrow_x[3] ,arrow_y[3],0.0)*Trans.S(arrow_scale,arrow_scale,arrow_scale);
 
 
         std::vector<Vertex>  mass_Arrow_Draw_vertices ;
@@ -869,11 +875,13 @@ void key_callback_Animation(GLFWwindow * window, int key, int scancode, int acti
 
 
 
-/****************************************************
+/**************************************************************************************************************
  * 
- * ANIMATION
- * ***********************************************/
-
+ * 
+ *                                              ANIMATION WINDOW.
+ * 
+ * 
+ * ************************************************************************************************************/
 //this is a function for the whole simulation.
 int animationWindow()
 {
@@ -921,99 +929,21 @@ int animationWindow()
             Vertex rv = Vertex();
             rv.set_value(arma::trans(vp));
             ramp_draw_vertices.push_back(rv);
-        }
-
-        Object distancias;
-        distancias = Object();
-        arma::fmat transformation_distancias =  Tr.S(0.025,0.025,0.025);
-        arma::fmat transformation_distancias_F =  Tr.T(1.58,0.0,0.0) * Tr.S(0.025,0.025,0.025);
-        arma::fmat ar_trans = Tr.T(1.58,0.69,0.0) * Tr.S(0.025,0.025,0.025);
-
-        //s_ani ************************************************************** s_ani
-        arma::fmat s_ani = Tr.T(0.0,0.0,0.0) * Tr.S(0.030,0.030,0.030);
-        
-        float t = 0.0;
-        float dt = 0.005;
-        arma:: fmat GHH = {{0.0, 0.0, 0.0}, //P1
-                      {0.513,0.15,0.0}, //P2
-                      {1.15, 0.35, 0.0}, //P3
-                      {1.581, 0.69, 0.0} //P4
-                      };
-
-
-        distancias.init("./models/sphere.obj");
-
-        std::vector<Vertex>  de_sphere_vertices = distancias.get_faces_verts();
-        
-        std::vector< Vertex > de_sphere_draw_vertices;
-        std::vector<Vertex> df_sphere_draw_vertices;
-        std::vector<Vertex> ar_draw_vertices;
-        for ( unsigned int i=0; i<de_sphere_vertices.size(); i++ ) 
-        {
-            arma::fcolvec v = de_sphere_vertices[i].getHomg();
-            arma::fcolvec vp =  transformation_distancias* v;
-            Vertex rv = Vertex();
-            rv.set_value(arma::trans(vp));
-            de_sphere_draw_vertices.push_back(rv);
-
-            vp = transformation_distancias_F * v;
-            rv =  Vertex();
-            rv.set_value(arma::trans(vp)); 
-            df_sphere_draw_vertices.push_back(rv);
-
-            vp = ar_trans * v;
-            rv =  Vertex();
-            rv.set_value(arma::trans(vp)); 
-            ar_draw_vertices.push_back(rv);
-        }
+        }      
 
         Object bm;
         bm = Object();
         bm.init("./models/BMX.obj");
-        arma::fmat trans_BM = Tr.T(-3.0,0.07,0.0) * Tr.S(0.0030,0.0030,0.0030);//* Trans.R(0.0f,0.0f,1.0f,20.0);        
-        std::vector<Vertex>  bm_vertices = bm.get_faces_verts();
-        
-        std::vector< Vertex > bm_draw_vertices;
-        for ( unsigned int i=0; i<bm_vertices.size(); i++ ) 
-        {
-            arma::fcolvec v = bm_vertices[i].getHomg();
-            arma::fcolvec vp =  trans_BM* v;
-            Vertex rv = Vertex();
-            rv.set_value(arma::trans(vp));
-            bm_draw_vertices.push_back(rv);
-        }
 
-        arma::fmat trans_BM_1 = Tr.T(-0.07,0.07,0.0) * Tr.S(0.0030,0.0030,0.0030);//* Trans.R(0.0f,0.0f,1.0f,20.0);
-        
-        std::vector< Vertex > bm_1_draw_vertices;
-        for ( unsigned int i=0; i<bm_vertices.size(); i++ ) 
-        {
-            arma::fcolvec v = bm_vertices[i].getHomg();
-            arma::fcolvec vp =  trans_BM_1* v;
-            Vertex rv = Vertex();
-            rv.set_value(arma::trans(vp));
-            bm_1_draw_vertices.push_back(rv);
-        }
-
-        arma::fmat trans_BM_2 = Tr.T(0.0,0.07,0.0) * Tr.S(0.0030,0.0030,0.0030) * Trans.R(0.0f,0.0f,1.0f,14.0);
-        
-        std::vector< Vertex > bm_2_draw_vertices;
-        for ( unsigned int i=0; i<bm_vertices.size(); i++ ) 
-        {
-            arma::fcolvec v = bm_vertices[i].getHomg();
-            arma::fcolvec vp =  trans_BM_2 * v;
-            Vertex rv = Vertex();
-            rv.set_value(arma::trans(vp));
-            bm_2_draw_vertices.push_back(rv);
-        }
-
+        std::vector<Vertex> bm_vertices = bm.get_faces_verts();
+      
         float jumpAngle = shift_variables_vpn[0] + shift_variables_offset[0];
         float velocity = shift_variables_vpn[1] + shift_variables_offset[1];
         float jump = shift_variables_vpn[2] + shift_variables_offset[2];
         float angularVelocity = shift_variables_vpn[3] + shift_variables_offset[3];
 
         BMX bicicle = BMX(bm, scaleSimulation , jumpAngle, jump, Color3f(0.6, 0.15, 0.8) ,
-        Vertex(0.0,0.0,0.0), Vertex(velocity, 0.0, 0.0), Vertex(-3.0, 0.0, 0.0),  Vertex(0.0, 0.0, 0.0),  
+        Vertex(0.0,0.0,0.0), Vertex(velocity, 0.0, 0.0), Vertex(0.0, 0.0, 0.0),  Vertex(0.0, 0.0, 0.0),  
         Vertex(0.0, 0.0, angularVelocity) ,  Vertex(0.0, 0.0, 0.0),  Vertex(0.0, 0.0 ,0.0) ,  Vertex(527.0, 230.0 ,0.0));
     
 do
@@ -1029,34 +959,12 @@ do
 
     gluLookAt(eye[0],eye[1], eye[2],camera[0],camera[1],camera[2],0.0,1.0,0.0);
     
-        arma::fmat s_ani_res_fmat = bezier_(GHH,t);
-        t += dt;
-        cout<< s_ani_res_fmat << endl;
-        s_ani = Tr.T(s_ani_res_fmat[0], s_ani_res_fmat[1] + (40 * 0.003), s_ani_res_fmat[2])* Tr.S(0.0030, 0.0030, 0.0030);
-        std::vector<Vertex> s_ani_draw_vertices;
-        for ( unsigned int i=0; i<bm_vertices.size(); i++ ) 
-        {
-            arma::fcolvec v = bm_vertices[i].getHomg();
-            arma::fcolvec vp =  s_ani * v;
-            Vertex rv = Vertex();
-            rv.set_value(arma::trans(vp));
-            s_ani_draw_vertices.push_back(rv);
-        }
-
-        draw(s_ani_draw_vertices, Color3f(0.0, 0.20, 0.67));
 
     draw(ramp_draw_vertices,Color3f(0.65, 0.32, 0.055));
-    draw(de_sphere_draw_vertices,Color3f(0.40,0.98,0.30));
-    
 
-    //draw(bm_draw_vertices,Color3f(0.40,0.98,0.30));
-
-    //draw(bm_1_draw_vertices,Color3f(0.40,0.98,0.30));
-
-   // draw(bm_2_draw_vertices, Color3f(0.40,0.98,0.30));
-   draw(df_sphere_draw_vertices,Color3f(0.40,0.98,0.30));
-   //draw(ar_draw_vertces,Color3f(0.40,0.98,0.30));
-
+    bicicle.makeStep();
+    bicicle.draw();
+    draw( bm_vertices,bicicle.getTransformation() ,Color3f(0.8, 0.9, 0.5));
 
     glEnd();
     glfwSwapBuffers(window);

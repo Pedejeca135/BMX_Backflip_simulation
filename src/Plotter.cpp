@@ -238,6 +238,20 @@ void draw(vector<Vertex> vertices, Color3f color)
 }
 
 
+void draw(vector<Vertex> vertices, arma::fmat transformation, Color3f color)
+{
+	std::vector< Vertex > draw_vertices;
+        for ( unsigned int i=0; i<vertices.size(); i++ ) 
+        {
+            arma::fcolvec v = vertices[i].getHomg();
+            arma::fcolvec vp = transformation * v;
+            Vertex rv = Vertex();
+            rv.set_value(arma::trans(vp));
+            draw_vertices.push_back(rv);
+        }
+         draw(draw_vertices,Color3f(0.5,0.7,0.3));
+}
+
 void draw(vector<Vertex> vertices, Color3f primario, Color3f secundario, int eje, float limite)
 {
 	

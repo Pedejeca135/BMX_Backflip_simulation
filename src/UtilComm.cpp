@@ -38,3 +38,12 @@ arma::fmat MH = {{-1.0, 3.0, -3.0, 1.0},
 					 return MH;
 
 }
+
+/******************************************************
+ *  other
+ * *****************************************************/
+//for "debuging".
+void print_D(std::string printing)
+{
+    std::cout<<std::endl<< printing << std::endl;
+}

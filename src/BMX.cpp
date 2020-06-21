@@ -13,6 +13,8 @@ BMX::BMX(Object model, float scale, float jumpAngle, float jump, Color3f color, 
     this->aceleration = aceleration;//m/s*s
     this->velocity = velocity;// in m/s
 
+    this->transformation = Tr.T(position.x, position.y, position.z) * Tr.S(scale, scale, scale);
+
     this->position = position;//escaled
 
     this->angular_Aceleration = angular_Aceleration;// 
@@ -31,7 +33,8 @@ void BMX::makeStep()
 
     if(befRampDone == false)
     {
-        if(position.x > rampIni.x)
+        cout<<"falsooooo"<<endl;
+        if(position.x > scaled(rampIni.x))
         {
             befRampDone = true;            
             t.Restart();
@@ -102,6 +105,7 @@ void BMX::makeStep()
 
 void BMX::draw()
 {
+    cout<<"dibujando"<<endl;
     std::vector< Vertex > draw_vertices;
     glColor3f(color.r, color.g, color.b);
     glBegin(GL_TRIANGLES);
@@ -111,19 +115,23 @@ void BMX::draw()
             arma::fcolvec vp =  this->transformation * v;
             Vertex rv = Vertex();
             rv.set_value(arma::trans(vp));
-            //draw_vertices.push_back(rv);
             arma::frowvec vert = rv.get_value();
             glVertex3f(vert[0], vert[1], vert[2]);
         }
-        glEnd();
+    glEnd();
 }
+
+arma::fmat BMX::getTransformation()
+{
+    return transformation;
+}
+
 
 arma::fmat BMX::Transformation()
 {
     calculatePosition();
     calculateRotation();
-    return  Tr.T(position.x, position.y + alturaModel, position.z)* Tr.S(scale, scale, scale)* Tr.R(1.0, 0.0, 0.0,rotation_Angle.x ) * Tr.R(0.0,1.0, 0.0, rotation_Angle.y) * Tr.R(0.0, 0.0 ,1.0, rotation_Angle.z) ;
-    
+    return  Tr.T(position.x, position.y + alturaModel, position.z)* Tr.S(scale, scale, scale)* Tr.R(1.0, 0.0, 0.0,rotation_Angle.x ) * Tr.R(0.0,1.0, 0.0, rotation_Angle.y) * Tr.R(0.0, 0.0 ,1.0, rotation_Angle.z) ;    
 }
      
 void BMX::calculatePosition()

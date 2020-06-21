@@ -39,6 +39,8 @@ class BMX
     bool backFlipDone = false; 
 
     float rateScale = 40.0/0.55;
+arma::fmat getTransformation();
+
 //############################ PRIVATE ###############################################
     private:
     float scale = 0.003;
@@ -46,7 +48,7 @@ class BMX
     float jumpAngle = 0.0;
     float jump = 0.0;
     Color3f color;
-    arma::fmat transformation;
+    arma::fmat  transformation= Tr.T(0.0, 0.0, 0.0);
 
 /************************
 *   vectorial parameters
@@ -73,6 +75,8 @@ float scaled(float toScale);
 float jumpScaled();
 
 float scaledPhysic(float toScale);
+
+
 
     
 };
